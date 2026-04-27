@@ -9,6 +9,7 @@ import DiscoverBookCard, { type AddState } from "./DiscoverBookCard";
 interface RecItem {
   volume: GoogleBookVolume;
   addState: AddState;
+  readUrl: string | null; // null = not found / still loading
 }
 
 export default function RecommendationsTab() {
@@ -24,13 +25,40 @@ export default function RecommendationsTab() {
       const res = await fetch("/api/recommendations");
       if (!res.ok) throw new Error("Failed");
       const data = await res.json();
-      setItems(
-        (data.results as GoogleBookVolume[]).map((v) => ({
-          volume: v,
-          addState: "idle" as AddState,
-        })),
-      );
+      const volumes = data.results as GoogleBookVolume[];
+      const mapped = volumes.map((v) => ({
+        volume: v,
+        addState: "idle" as AddState,
+        readUrl: null,
+      }));
+      setItems(mapped);
       setBasis(data.basis ?? null);
+
+      // Background: resolve free read URLs for each item
+      volumes.forEach((volume, index) => {
+        const info = volume.volumeInfo;
+        const isbn =
+          info.industryIdentifiers?.find(
+            (id) => id.type === "ISBN_13" || id.type === "ISBN_10",
+          )?.identifier ?? "";
+        const params = new URLSearchParams({
+          isbn,
+          title: info.title,
+          author: info.authors?.[0] ?? "",
+        });
+        fetch(`/api/books/find-read-url?${params}`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d) => {
+            if (d?.url) {
+              setItems((prev) =>
+                prev.map((it, i) =>
+                  i === index ? { ...it, readUrl: d.url } : it,
+                ),
+              );
+            }
+          })
+          .catch(() => {});
+      });
     } catch {
       setError(true);
     } finally {
@@ -55,20 +83,24 @@ export default function RecommendationsTab() {
     try {
       const form = volumeToFormData(item.volume);
 
-      // Best-effort: find read URL before saving
-      try {
-        const params = new URLSearchParams({
-          isbn: form.isbn ?? "",
-          title: form.title,
-          author: form.author ?? "",
-        });
-        const urlRes = await fetch(`/api/books/find-read-url?${params}`);
-        if (urlRes.ok) {
-          const urlData = await urlRes.json();
-          if (urlData.url) form.read_url = urlData.url;
+      // Use already-resolved URL or try to find one
+      if (item.readUrl) {
+        form.read_url = item.readUrl;
+      } else {
+        try {
+          const params = new URLSearchParams({
+            isbn: form.isbn ?? "",
+            title: form.title,
+            author: form.author ?? "",
+          });
+          const urlRes = await fetch(`/api/books/find-read-url?${params}`);
+          if (urlRes.ok) {
+            const urlData = await urlRes.json();
+            if (urlData.url) form.read_url = urlData.url;
+          }
+        } catch {
+          // non-critical
         }
-      } catch {
-        // non-critical
       }
 
       const res = await fetch("/api/books", {
@@ -154,7 +186,7 @@ export default function RecommendationsTab() {
                 title={info.title}
                 author={info.authors?.join(", ")}
                 cover_url={cover}
-                read_url={null}
+                read_url={item.readUrl}
                 addState={item.addState}
                 onAdd={() => handleAdd(index)}
               />
