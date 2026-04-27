@@ -1,26 +1,52 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --parchment: #FAF6EF;
+  --parchment-dark: #EDE0C8;
+  --walnut: #3D1F00;
+  --walnut-mid: #7B3F00;
+  --gold: #C5872B;
+  --gold-light: #E5A84F;
+  --card-bg: #FFFDF7;
+  /* legacy */
+  --background: #FAF6EF;
+  --foreground: #1a0a00;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-parchment: var(--parchment);
+  --color-parchment-dark: var(--parchment-dark);
+  --color-walnut: var(--walnut);
+  --color-walnut-mid: var(--walnut-mid);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-card: var(--card-bg);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-lora);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #e8dcc8 25%, #f5edd8 50%, #e8dcc8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
 body {
-  background: var(--background);
+  background: var(--parchment);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
