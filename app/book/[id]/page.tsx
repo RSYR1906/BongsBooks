@@ -4,6 +4,7 @@ import type { Book } from "@/lib/database.types";
 import { getSupabase } from "@/lib/supabase";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import DeleteBookButton from "./DeleteBookButton";
 
 export const revalidate = 0;
 
@@ -122,13 +123,18 @@ export default async function BookPage({ params }: Props) {
 
         {/* Description */}
         {b.description && (
-          <div className="mb-8 bg-card border border-parchment-dark rounded-2xl p-4">
+          <div className="mb-5 bg-card border border-parchment-dark rounded-2xl p-4">
             <h3 className="font-serif font-semibold text-walnut mb-2">
               About this book
             </h3>
             <ExpandableDescription text={b.description} />
           </div>
         )}
+
+        {/* Danger zone */}
+        <div className="mb-10">
+          <DeleteBookButton id={b.id} />
+        </div>
       </div>
     </AppShell>
   );

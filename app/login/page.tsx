@@ -45,7 +45,7 @@ export default function LoginPage() {
         <div className="text-center mb-8 select-none">
           <div className="text-7xl mb-3 drop-shadow-lg">📚</div>
           <h1 className="font-serif text-3xl font-bold text-amber-50 tracking-tight">
-            My Library
+            Bongs Library
           </h1>
           <p className="text-amber-300/70 text-sm mt-2">
             Your personal reading world
