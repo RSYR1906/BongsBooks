@@ -84,7 +84,7 @@ export default async function BookPage({ params }: Props) {
               {b.genre.map((g) => (
                 <span
                   key={g}
-                  className="text-xs bg-gold/10 text-walnut-mid border border-gold/20 px-2.5 py-0.5 rounded-full"
+                  className="text-xs bg-[#F5EDDA] text-walnut font-serif border-l-2 border-gold px-2.5 py-0.5 rounded-r-md font-medium"
                 >
                   {g}
                 </span>
@@ -106,7 +106,7 @@ export default async function BookPage({ params }: Props) {
             </a>
           ) : (
             <>
-              <div className="bg-card border border-parchment-dark rounded-2xl p-3.5 text-center text-sm text-walnut-mid">
+              <div className="bg-[#FFFDF7] border border-[#C5872B]/20 rounded-2xl p-3.5 text-center text-sm text-walnut-mid">
                 No free digital copy found for this book.
               </div>
               <a
@@ -123,7 +123,7 @@ export default async function BookPage({ params }: Props) {
 
         {/* Description */}
         {b.description && (
-          <div className="mb-5 bg-card border border-parchment-dark rounded-2xl p-4">
+          <div className="mb-5 bg-[#FFFDF7] border border-[#C5872B]/20 rounded-2xl p-4">
             <h3 className="font-serif font-semibold text-walnut mb-2">
               About this book
             </h3>

@@ -58,7 +58,7 @@ export default function LibraryClient({ books }: Props) {
           placeholder="Search by title or author…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full border border-parchment-dark bg-card rounded-xl pl-9 pr-8 py-2.5 text-sm text-walnut focus:outline-none focus:ring-2 focus:ring-gold/30 placeholder:text-walnut-mid/40"
+          className="w-full border border-[#C5872B]/35 bg-[#FDFAF4] rounded-xl pl-9 pr-8 py-2.5 text-sm text-walnut focus:outline-none focus:ring-2 focus:ring-gold/30 placeholder:text-walnut-mid/40 shadow-inner"
         />
         {query && (
           <button
@@ -77,10 +77,10 @@ export default function LibraryClient({ books }: Props) {
             <button
               key={g}
               onClick={() => setGenreFilter(g)}
-              className={`shrink-0 text-xs px-3 py-1.5 rounded-full font-medium transition-all active:scale-95 ${
+              className={`shrink-0 text-xs px-3 py-1.5 rounded-md font-medium font-serif transition-all active:scale-95 ${
                 genreFilter === g
-                  ? "bg-walnut text-white shadow-sm"
-                  : "bg-card text-walnut-mid border border-parchment-dark hover:border-gold/40"
+                  ? "bg-walnut text-amber-100 shadow-sm"
+                  : "bg-[#F5EDDA] text-walnut border border-[#C5872B]/30 hover:border-gold/60 hover:bg-[#F2E8D6]"
               }`}
             >
               {g}
@@ -113,7 +113,7 @@ export default function LibraryClient({ books }: Props) {
 function BookCard({ book }: { book: Book }) {
   return (
     <Link href={`/book/${book.id}`} className="group block">
-      <div className="aspect-[2/3] relative rounded-xl overflow-hidden shadow-md group-hover:shadow-xl group-hover:-translate-y-1 transition-all duration-200">
+      <div className="aspect-[2/3] relative rounded-xl overflow-hidden shadow-[0_3px_10px_rgba(61,31,0,0.2),0_1px_3px_rgba(61,31,0,0.12)] group-hover:shadow-[0_8px_20px_rgba(61,31,0,0.28)] group-hover:-translate-y-1.5 transition-all duration-200">
         {book.cover_url ? (
           <Image
             src={book.cover_url}
@@ -124,15 +124,27 @@ function BookCard({ book }: { book: Book }) {
             unoptimized={book.cover_url.includes("books.google.com")}
           />
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-2 text-center bg-gradient-to-b from-walnut-mid to-walnut">
-            <span className="text-3xl">📕</span>
-            <span className="text-xs text-amber-200 mt-1 line-clamp-3 font-serif leading-tight">
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center p-2 text-center overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(160deg, #7B3500 0%, #4A2000 40%, #2B1200 100%)",
+              borderLeft: "3px solid rgba(197,135,43,0.45)",
+            }}
+          >
+            <span className="text-2xl">📕</span>
+            <span className="text-[10px] text-amber-200/90 mt-1 line-clamp-3 font-serif leading-tight">
               {book.title}
             </span>
+            {book.author && (
+              <span className="text-[9px] text-amber-300/50 mt-0.5 line-clamp-1">
+                {book.author}
+              </span>
+            )}
           </div>
         )}
         {book.read_url && (
-          <div className="absolute top-1.5 right-1.5 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full shadow z-10 uppercase tracking-wide">
+          <div className="absolute top-1.5 right-1.5 bg-[#2D4A3E] text-white text-[9px] font-bold px-1.5 py-0.5 rounded shadow z-10 uppercase tracking-wide">
             Free
           </div>
         )}

@@ -35,15 +35,27 @@ export default function DiscoverBookCard({
             unoptimized
           />
         ) : (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-2 text-center bg-gradient-to-b from-walnut-mid to-walnut">
-            <span className="text-3xl">📕</span>
-            <span className="text-xs text-amber-200 mt-1 line-clamp-3 font-serif leading-tight">
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center p-2 text-center overflow-hidden"
+            style={{
+              background:
+                "linear-gradient(160deg, #7B3500 0%, #4A2000 40%, #2B1200 100%)",
+              borderLeft: "3px solid rgba(197,135,43,0.45)",
+            }}
+          >
+            <span className="text-2xl">📕</span>
+            <span className="text-[10px] text-amber-200/90 mt-1 line-clamp-3 font-serif leading-tight">
               {title}
             </span>
+            {author && (
+              <span className="text-[9px] text-amber-300/50 mt-0.5 line-clamp-1">
+                {author}
+              </span>
+            )}
           </div>
         )}
         {read_url && (
-          <div className="absolute top-1.5 left-1.5 bg-emerald-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wide shadow">
+          <div className="absolute top-1.5 left-1.5 bg-[#2D4A3E] text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide shadow">
             Free
           </div>
         )}
@@ -64,7 +76,7 @@ export default function DiscoverBookCard({
             href={read_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 text-center text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-lg py-1.5 leading-none hover:bg-emerald-100 transition-colors"
+            className="flex-1 text-center text-[10px] font-medium bg-[#2D4A3E]/10 text-[#2D4A3E] border border-[#2D4A3E]/25 rounded-lg py-1.5 leading-none hover:bg-[#2D4A3E]/15 transition-colors"
           >
             Read →
           </a>

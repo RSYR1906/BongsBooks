@@ -11,6 +11,7 @@ export default function SearchTab() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<GoogleBookVolume[]>([]);
   const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState(false);
   const [selected, setSelected] = useState<BookFormData | null>(null);
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
@@ -30,13 +31,21 @@ export default function SearchTab() {
   const doSearch = useCallback(async (q: string) => {
     if (!q.trim()) {
       setResults([]);
+      setSearchError(false);
       return;
     }
     setSearching(true);
+    setSearchError(false);
     try {
       const res = await fetch(`/api/books/search?q=${encodeURIComponent(q)}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setResults(data.items ?? []);
+      const items: GoogleBookVolume[] = data.items ?? [];
+      setResults(items);
+      if (items.length === 0 && q.trim()) setSearchError(false); // empty is fine
+    } catch {
+      setResults([]);
+      setSearchError(true);
     } finally {
       setSearching(false);
     }
@@ -137,6 +146,19 @@ export default function SearchTab() {
       {searching && (
         <p className="text-sm text-walnut-mid text-center animate-pulse">
           Searching…
+        </p>
+      )}
+
+      {searchError && !searching && (
+        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 text-center">
+          Search failed — check your connection or try again.
+        </div>
+      )}
+
+      {!searching && !searchError && query.trim() && results.length === 0 && (
+        <p className="text-sm text-walnut-mid text-center py-4">
+          No books found for &ldquo;{query}&rdquo;. Try a different title or
+          author.
         </p>
       )}
 

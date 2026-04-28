@@ -34,8 +34,9 @@ export default function RecommendationsTab() {
       setItems(mapped);
       setBasis(data.basis ?? null);
 
-      // Background: resolve free read URLs for each item
-      volumes.forEach((volume, index) => {
+      // Background: resolve free read URLs — limit to first 6 to avoid
+      // overwhelming the browser connection pool with concurrent requests
+      volumes.slice(0, 6).forEach((volume, index) => {
         const info = volume.volumeInfo;
         const isbn =
           info.industryIdentifiers?.find(

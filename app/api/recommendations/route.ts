@@ -2,19 +2,36 @@ import type { GoogleBookVolume } from "@/lib/books";
 import { getSupabase } from "@/lib/supabase";
 import { NextResponse } from "next/server";
 
+// Vercel free tier: 10s max. Keep well under that.
+const TIMEOUT_MS = 8000;
+
+function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
+  return Promise.race([
+    p,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error("timeout")), ms),
+    ),
+  ]);
+}
+
 async function fetchGoogleBooks(
   query: string,
-  apiKey: string | undefined
+  apiKey: string | undefined,
 ): Promise<GoogleBookVolume[]> {
-  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
-    query
-  )}&maxResults=10&orderBy=relevance${apiKey ? `&key=${apiKey}` : ""}`;
+  const url =
+    `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}` +
+    `&maxResults=10&orderBy=relevance${apiKey ? `&key=${apiKey}` : ""}`;
   try {
-    const res = await fetch(url, { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
+    // cache: "no-store" — never serve a stale cached response on Vercel
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) {
+      console.error(`Google Books API error ${res.status} for query: ${query}`);
+      return [];
+    }
     const data = await res.json();
     return (data.items ?? []) as GoogleBookVolume[];
-  } catch {
+  } catch (err) {
+    console.error("fetchGoogleBooks threw:", err);
     return [];
   }
 }
@@ -22,12 +39,28 @@ async function fetchGoogleBooks(
 export async function GET() {
   const apiKey = process.env.GOOGLE_BOOKS_API_KEY;
 
+  try {
+    return await withTimeout(buildResponse(apiKey), TIMEOUT_MS);
+  } catch {
+    // Timeout or unexpected error — return generic fallback
+    return NextResponse.json({ results: [], basis: null });
+  }
+}
+
+async function buildResponse(apiKey: string | undefined) {
   const { data: books, error } = await getSupabase()
     .from("books")
     .select("title, author, genre, google_books_id, isbn");
 
+  if (error) {
+    console.error("Supabase error in recommendations:", error.message);
+  }
+
   if (error || !books || books.length === 0) {
-    const fallback = await fetchGoogleBooks("subject:classic fiction bestseller", apiKey);
+    const fallback = await fetchGoogleBooks(
+      "subject:fiction bestseller popular",
+      apiKey,
+    );
     return NextResponse.json({ results: fallback, basis: null });
   }
 
@@ -35,11 +68,11 @@ export async function GET() {
   const genreMap = new Map<string, number>();
   books.forEach((b) => {
     (b.genre ?? []).forEach((g: string) =>
-      genreMap.set(g, (genreMap.get(g) ?? 0) + 1)
+      genreMap.set(g, (genreMap.get(g) ?? 0) + 1),
     );
   });
 
-  // Author frequency map (split "Author A, Author B" into individuals)
+  // Author frequency map
   const authorMap = new Map<string, number>();
   books.forEach((b) => {
     if (b.author) {
@@ -55,30 +88,27 @@ export async function GET() {
     .slice(0, 2)
     .map(([g]) => g);
 
-  const topAuthor = [...authorMap.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .map(([a]) => a)[0] ?? null;
+  const topAuthor =
+    [...authorMap.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
 
   // Owned identifiers for deduplication
   const ownedGoogleIds = new Set(
-    books.map((b) => b.google_books_id).filter(Boolean)
+    books.map((b) => b.google_books_id).filter(Boolean),
   );
   const ownedIsbns = new Set(books.map((b) => b.isbn).filter(Boolean));
-  const ownedTitles = new Set(
-    books.map((b) => b.title.toLowerCase().trim())
-  );
+  const ownedTitles = new Set(books.map((b) => b.title.toLowerCase().trim()));
 
-  // Build query list
+  // Build query list — genres first, then author
   const queries: string[] = [];
   topGenres.forEach((g) => queries.push(`subject:"${g}"`));
   if (topAuthor) queries.push(`inauthor:"${topAuthor}"`);
   if (queries.length === 0) queries.push("subject:fiction bestseller");
 
   const allResults = await Promise.all(
-    queries.map((q) => fetchGoogleBooks(q, apiKey))
+    queries.map((q) => fetchGoogleBooks(q, apiKey)),
   );
 
-  // Merge, deduplicate, filter already-owned
+  // Merge and deduplicate, skip already-owned
   const seen = new Set<string>();
   const recommendations: GoogleBookVolume[] = [];
 
@@ -89,7 +119,7 @@ export async function GET() {
       if (ownedTitles.has(vol.volumeInfo.title.toLowerCase().trim())) continue;
 
       const isbns = (vol.volumeInfo.industryIdentifiers ?? []).map(
-        (i) => i.identifier
+        (i) => i.identifier,
       );
       if (isbns.some((isbn) => ownedIsbns.has(isbn))) continue;
 
@@ -100,8 +130,17 @@ export async function GET() {
     if (recommendations.length >= 20) break;
   }
 
+  // If all personalized queries returned nothing, try a generic fallback
+  if (recommendations.length === 0) {
+    const fallback = await fetchGoogleBooks(
+      "subject:fiction bestseller popular",
+      apiKey,
+    );
+    return NextResponse.json({ results: fallback, basis: null });
+  }
+
   const basis =
-    topGenres.length > 0 ? topGenres.join(", ") : topAuthor ?? null;
+    topGenres.length > 0 ? topGenres.join(", ") : (topAuthor ?? null);
 
   return NextResponse.json({ results: recommendations, basis });
 }

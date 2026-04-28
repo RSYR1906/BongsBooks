@@ -8,6 +8,10 @@
   --gold: #C5872B;
   --gold-light: #E5A84F;
   --card-bg: #FFFDF7;
+  --mahogany: #1C0A00;
+  --library-green: #2D4A3E;
+  --brass: #8B6914;
+  --aged-paper: #F5EDDA;
   /* legacy */
   --background: #FAF6EF;
   --foreground: #1a0a00;
@@ -23,6 +27,10 @@
   --color-gold: var(--gold);
   --color-gold-light: var(--gold-light);
   --color-card: var(--card-bg);
+  --color-mahogany: var(--mahogany);
+  --color-library-green: var(--library-green);
+  --color-brass: var(--brass);
+  --color-aged-paper: var(--aged-paper);
   --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-lora);
 }
@@ -33,7 +41,7 @@
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #e8dcc8 25%, #f5edd8 50%, #e8dcc8 75%);
+  background: linear-gradient(90deg, #ddd0b4 25%, #efe3c8 50%, #ddd0b4 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }
@@ -46,7 +54,37 @@
   display: none;
 }
 
+/* Wood-panel grain — for the sticky top header */
+.wood-panel {
+  background-image:
+    repeating-linear-gradient(
+      93deg,
+      transparent 0px, transparent 40px,
+      rgba(255, 255, 255, 0.012) 40px, rgba(255, 255, 255, 0.012) 42px,
+      transparent 42px, transparent 72px,
+      rgba(0, 0, 0, 0.04) 72px, rgba(0, 0, 0, 0.04) 73px
+    ),
+    linear-gradient(180deg, #5C2A0A 0%, #3D1F00 55%, #2B1500 100%);
+}
+
+/* Same grain, inverted gradient — for the bottom nav */
+.wood-panel-floor {
+  background-image:
+    repeating-linear-gradient(
+      93deg,
+      transparent 0px, transparent 40px,
+      rgba(255, 255, 255, 0.012) 40px, rgba(255, 255, 255, 0.012) 42px,
+      transparent 42px, transparent 72px,
+      rgba(0, 0, 0, 0.04) 72px, rgba(0, 0, 0, 0.04) 73px
+    ),
+    linear-gradient(0deg, #2B1500 0%, #3D1F00 60%, #4A2200 100%);
+}
+
 body {
-  background: var(--parchment);
+  background-color: var(--parchment);
   color: var(--foreground);
+  /* Subtle warm ambient glow — sunlit reading room */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 15% 0%, rgba(197, 135, 43, 0.06) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 40% at 85% 100%, rgba(61, 31, 0, 0.04) 0%, transparent 65%);
 }

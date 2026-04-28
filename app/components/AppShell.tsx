@@ -37,7 +37,10 @@ export default function AppShell({
   return (
     <div className="min-h-screen bg-parchment">
       {/* Top bar */}
-      <header className="bg-walnut text-white sticky top-0 z-20 shadow-md">
+      <header
+        className="wood-panel text-white sticky top-0 z-20 shadow-lg"
+        style={{ borderBottom: "2px solid #8B6914" }}
+      >
         <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
           {backHref ? (
             <>
@@ -70,8 +73,11 @@ export default function AppShell({
 
       {/* Bottom navigation */}
       <nav
-        className="fixed bottom-0 inset-x-0 z-20 bg-walnut"
-        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+        className="wood-panel-floor fixed bottom-0 inset-x-0 z-20"
+        style={{
+          borderTop: "2px solid #8B6914",
+          paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        }}
       >
         <div className="max-w-2xl mx-auto h-16 flex items-end pb-2 px-8 justify-between">
           {/* Library */}

@@ -37,24 +37,37 @@ export default function LoginPage() {
       className="min-h-screen flex items-center justify-center px-4"
       style={{
         background:
-          "linear-gradient(135deg, #3D1F00 0%, #7B3F00 55%, #3D1F00 100%)",
+          "radial-gradient(ellipse 140% 120% at 50% 0%, #5C2A0A 0%, #3D1F00 45%, #1C0A00 100%)",
       }}
     >
       <div className="w-full max-w-sm">
         {/* Branding */}
         <div className="text-center mb-8 select-none">
           <div className="text-7xl mb-3 drop-shadow-lg">📚</div>
-          <h1 className="font-serif text-3xl font-bold text-amber-50 tracking-tight">
+          <h1 className="font-serif text-4xl font-bold text-amber-50 tracking-tight">
             Bongs Library
           </h1>
-          <p className="text-amber-300/70 text-sm mt-2">
+          <div className="flex items-center gap-3 justify-center mt-3">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#8B6914]/60" />
+            <span className="text-[#C5872B]/80 text-[10px] tracking-[0.3em] uppercase font-medium">
+              Est. 2024
+            </span>
+            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#8B6914]/60" />
+          </div>
+          <p className="text-amber-300/60 text-sm mt-2">
             Your personal reading world
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="bg-[#FFFDF7] rounded-2xl shadow-2xl p-6 space-y-4"
+          className="rounded-2xl p-6 space-y-4"
+          style={{
+            background: "#FFFDF7",
+            border: "1px solid rgba(139,105,20,0.3)",
+            boxShadow:
+              "0 20px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(139,105,20,0.08)",
+          }}
         >
           <div>
             <label
