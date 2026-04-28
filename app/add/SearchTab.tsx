@@ -43,7 +43,7 @@ export default function SearchTab() {
         const msg =
           res.status === 504
             ? "Search timed out — try again."
-            : (body.error as string) ?? `Search failed (${res.status})`;
+            : ((body.error as string) ?? `Search failed (${res.status})`);
         throw new Error(msg);
       }
       const data = await res.json();
@@ -116,7 +116,7 @@ export default function SearchTab() {
 
   if (savedId) {
     return (
-      <div className="bg-card border border-parchment-dark rounded-2xl p-6 text-center space-y-4 shadow">
+      <div className="bg-[#FFFDF7] border border-[#EDE5D0] rounded-2xl p-6 text-center space-y-4 shadow">
         <div className="text-4xl">✅</div>
         <p className="font-semibold text-walnut">Book added to your library!</p>
         <div className="flex gap-3 justify-center">
@@ -158,7 +158,7 @@ export default function SearchTab() {
       )}
 
       {searchError && !searching && (
-        <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 text-center">
+        <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-600 text-center">
           {searchError}
         </div>
       )}
@@ -172,7 +172,7 @@ export default function SearchTab() {
 
       {/* Search results */}
       {results.length > 0 && !selected && (
-        <div className="bg-card rounded-xl shadow border border-parchment-dark divide-y divide-parchment-dark">
+        <div className="bg-[#FFFDF7] rounded-xl shadow border border-[#EDE5D0] divide-y divide-[#EDE5D0]">
           {results.map((vol) => {
             const info = vol.volumeInfo;
             const thumb = info.imageLinks?.smallThumbnail?.replace(
@@ -183,7 +183,7 @@ export default function SearchTab() {
               <button
                 key={vol.id}
                 onClick={() => handleSelect(vol)}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-parchment-dark/30 transition-colors text-left"
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-[#F5EDDA] transition-colors text-left"
               >
                 {thumb ? (
                   <Image
@@ -195,7 +195,7 @@ export default function SearchTab() {
                     unoptimized
                   />
                 ) : (
-                  <div className="w-9 h-14 bg-parchment-dark rounded flex items-center justify-center shrink-0 text-xl">
+                  <div className="w-9 h-14 bg-[#EDE5D0] rounded flex items-center justify-center shrink-0 text-xl">
                     📕
                   </div>
                 )}
@@ -204,12 +204,12 @@ export default function SearchTab() {
                     {info.title}
                   </p>
                   {info.authors && (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-walnut-mid">
                       {info.authors.join(", ")}
                     </p>
                   )}
                   {info.publishedDate && (
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-walnut-mid/60">
                       {info.publishedDate}
                     </p>
                   )}
@@ -222,7 +222,7 @@ export default function SearchTab() {
 
       {/* Selected book form */}
       {selected && (
-        <div className="bg-card border border-parchment-dark rounded-2xl shadow p-5 space-y-4">
+        <div className="bg-[#FFFDF7] border border-[#EDE5D0] rounded-2xl shadow p-5 space-y-4">
           <div className="flex gap-4">
             {selected.cover_url && (
               <Image
@@ -254,7 +254,7 @@ export default function SearchTab() {
           </div>
 
           {selected.read_url && (
-            <p className="text-xs text-green-700 bg-green-50 rounded-lg px-3 py-2">
+            <p className="text-xs text-[#4DB891] bg-[#3A6355]/20 rounded-lg px-3 py-2 border border-[#3A6355]/30">
               ✅ Free online copy found!
             </p>
           )}
@@ -262,7 +262,7 @@ export default function SearchTab() {
           <div className="flex gap-3">
             <button
               onClick={() => setSelected(null)}
-              className="flex-1 border border-parchment-dark text-walnut-mid text-sm font-medium py-2.5 rounded-xl hover:bg-parchment-dark/30 transition-colors"
+              className="flex-1 border border-[#C5872B]/20 text-walnut-mid text-sm font-medium py-2.5 rounded-xl hover:bg-[#F5EDDA] transition-colors"
             >
               Cancel
             </button>
@@ -279,7 +279,7 @@ export default function SearchTab() {
 
       {/* Manual entry fallback */}
       {!selected && !searching && query && results.length === 0 && (
-        <div className="bg-card border border-parchment-dark rounded-2xl shadow p-5 space-y-3">
+        <div className="bg-[#FFFDF7] border border-[#EDE5D0] rounded-2xl shadow p-5 space-y-3">
           <p className="text-sm text-walnut-mid">
             No results. Enter details manually:
           </p>

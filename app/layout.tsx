@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Lora } from "next/font/google";
+import SwRegister from "./components/SwRegister";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,20 +16,20 @@ const lora = Lora({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#92400e",
+  themeColor: "#3A1800",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
 };
 
 export const metadata: Metadata = {
-  title: "My Library",
+  title: "Bongs Library",
   description: "A personal digital book library",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
-    title: "My Library",
+    statusBarStyle: "black-translucent",
+    title: "Bongs Library",
   },
 };
 
@@ -42,7 +43,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${lora.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <SwRegister />
+        {children}
+      </body>
     </html>
   );
 }

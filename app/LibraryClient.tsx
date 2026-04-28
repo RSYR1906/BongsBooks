@@ -58,7 +58,7 @@ export default function LibraryClient({ books }: Props) {
           placeholder="Search by title or author…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full border border-[#C5872B]/35 bg-[#FDFAF4] rounded-xl pl-9 pr-8 py-2.5 text-sm text-walnut focus:outline-none focus:ring-2 focus:ring-gold/30 placeholder:text-walnut-mid/40 shadow-inner"
+          className="w-full border border-[#C5872B]/25 bg-[#FDFAF4] rounded-xl pl-9 pr-8 py-2.5 text-sm text-walnut focus:outline-none focus:ring-2 focus:ring-gold/30 placeholder:text-walnut-mid/50 shadow-inner"
         />
         {query && (
           <button
@@ -79,8 +79,8 @@ export default function LibraryClient({ books }: Props) {
               onClick={() => setGenreFilter(g)}
               className={`shrink-0 text-xs px-3 py-1.5 rounded-md font-medium font-serif transition-all active:scale-95 ${
                 genreFilter === g
-                  ? "bg-walnut text-amber-100 shadow-sm"
-                  : "bg-[#F5EDDA] text-walnut border border-[#C5872B]/30 hover:border-gold/60 hover:bg-[#F2E8D6]"
+                  ? "bg-gold text-white shadow-sm"
+                  : "bg-[#F5EDDA] text-walnut-mid border border-[#C5872B]/20 hover:border-gold/50 hover:text-walnut"
               }`}
             >
               {g}

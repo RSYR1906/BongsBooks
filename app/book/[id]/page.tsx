@@ -42,7 +42,7 @@ export default async function BookPage({ params }: Props) {
             unoptimized={isGoogleCover}
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-walnut/60 to-walnut/95" />
+        <div className="absolute inset-0 bg-gradient-to-b from-walnut/50 to-parchment/96" />
       </div>
 
       <div className="max-w-2xl mx-auto px-4">
@@ -59,7 +59,7 @@ export default async function BookPage({ params }: Props) {
                 unoptimized={isGoogleCover}
               />
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-walnut-mid to-walnut text-4xl">
+              <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-[#3A1800] to-[#1C0800] text-4xl">
                 📕
               </div>
             )}
@@ -106,14 +106,14 @@ export default async function BookPage({ params }: Props) {
             </a>
           ) : (
             <>
-              <div className="bg-[#FFFDF7] border border-[#C5872B]/20 rounded-2xl p-3.5 text-center text-sm text-walnut-mid">
+              <div className="bg-[#FFFDF7] border border-[#EDE5D0] rounded-2xl p-3.5 text-center text-sm text-walnut-mid">
                 No free digital copy found for this book.
               </div>
               <a
                 href={amazonUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full bg-walnut hover:bg-walnut-mid active:scale-[0.98] text-amber-100 font-medium py-2.5 rounded-2xl transition-all text-sm"
+                className="flex items-center justify-center gap-2 w-full bg-[#F5EDDA] hover:bg-[#EDE5D0] active:scale-[0.98] text-walnut font-medium py-2.5 rounded-2xl transition-all text-sm"
               >
                 Find on Amazon →
               </a>
@@ -123,7 +123,7 @@ export default async function BookPage({ params }: Props) {
 
         {/* Description */}
         {b.description && (
-          <div className="mb-5 bg-[#FFFDF7] border border-[#C5872B]/20 rounded-2xl p-4">
+          <div className="mb-5 bg-[#FFFDF7] border border-[#EDE5D0] rounded-2xl p-4">
             <h3 className="font-serif font-semibold text-walnut mb-2">
               About this book
             </h3>

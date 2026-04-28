@@ -1,20 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --parchment: #FAF6EF;
-  --parchment-dark: #EDE0C8;
-  --walnut: #3D1F00;
-  --walnut-mid: #7B3F00;
-  --gold: #C5872B;
-  --gold-light: #E5A84F;
-  --card-bg: #FFFDF7;
-  --mahogany: #1C0A00;
-  --library-green: #2D4A3E;
-  --brass: #8B6914;
-  --aged-paper: #F5EDDA;
+  /* Light library palette — warm parchment */
+  --parchment: #FDFAF4;         /* page background — warm ivory */
+  --parchment-dark: #EDE5D0;    /* raised borders, input backgrounds */
+  --walnut: #3D1F00;            /* primary text — dark brown */
+  --walnut-mid: #7A5230;        /* secondary text — mid brown */
+  --gold: #C5872B;              /* gold accent */
+  --gold-light: #E5A84F;        /* gold hover */
+  --card-bg: #FFFDF7;           /* card / panel surfaces */
+  --mahogany: #3A1800;          /* deep accent */
+  --library-green: #2D4A3E;     /* library green */
+  --brass: #8B6914;             /* border accents */
+  --aged-paper: #F5EDDA;        /* raised / elevated surfaces */
   /* legacy */
-  --background: #FAF6EF;
-  --foreground: #1a0a00;
+  --background: #FDFAF4;
+  --foreground: #3D1F00;
 }
 
 @theme inline {
@@ -41,7 +42,7 @@
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #ddd0b4 25%, #efe3c8 50%, #ddd0b4 75%);
+  background: linear-gradient(90deg, #EDE5D0 25%, #F5EDDA 50%, #EDE5D0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }
@@ -54,7 +55,7 @@
   display: none;
 }
 
-/* Wood-panel grain — for the sticky top header */
+/* Wood-panel grain — sticky header */
 .wood-panel {
   background-image:
     repeating-linear-gradient(
@@ -62,12 +63,12 @@
       transparent 0px, transparent 40px,
       rgba(255, 255, 255, 0.012) 40px, rgba(255, 255, 255, 0.012) 42px,
       transparent 42px, transparent 72px,
-      rgba(0, 0, 0, 0.04) 72px, rgba(0, 0, 0, 0.04) 73px
+      rgba(0, 0, 0, 0.06) 72px, rgba(0, 0, 0, 0.06) 73px
     ),
-    linear-gradient(180deg, #5C2A0A 0%, #3D1F00 55%, #2B1500 100%);
+    linear-gradient(180deg, #3A1800 0%, #1C0800 55%, #0E0400 100%);
 }
 
-/* Same grain, inverted gradient — for the bottom nav */
+/* Same grain, inverted gradient — bottom nav */
 .wood-panel-floor {
   background-image:
     repeating-linear-gradient(
@@ -75,16 +76,16 @@
       transparent 0px, transparent 40px,
       rgba(255, 255, 255, 0.012) 40px, rgba(255, 255, 255, 0.012) 42px,
       transparent 42px, transparent 72px,
-      rgba(0, 0, 0, 0.04) 72px, rgba(0, 0, 0, 0.04) 73px
+      rgba(0, 0, 0, 0.06) 72px, rgba(0, 0, 0, 0.06) 73px
     ),
-    linear-gradient(0deg, #2B1500 0%, #3D1F00 60%, #4A2200 100%);
+    linear-gradient(0deg, #0E0400 0%, #1C0800 60%, #2A1200 100%);
 }
 
 body {
   background-color: var(--parchment);
   color: var(--foreground);
-  /* Subtle warm ambient glow — sunlit reading room */
+  /* Warm parchment glow */
   background-image:
-    radial-gradient(ellipse 80% 50% at 15% 0%, rgba(197, 135, 43, 0.06) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 40% at 85% 100%, rgba(61, 31, 0, 0.04) 0%, transparent 65%);
+    radial-gradient(ellipse 90% 55% at 10% 0%, rgba(197, 135, 43, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 45% at 90% 100%, rgba(139, 105, 20, 0.03) 0%, transparent 60%);
 }

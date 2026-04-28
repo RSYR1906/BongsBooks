@@ -161,15 +161,15 @@ export default function FreeBooksTab() {
   return (
     <div className="space-y-4">
       {/* Source toggle */}
-      <div className="flex bg-card rounded-xl border border-parchment-dark overflow-hidden shadow-sm">
+      <div className="flex bg-[#FFFDF7] rounded-xl border border-[#EDE5D0] overflow-hidden shadow-sm">
         {SOURCES.map((s) => (
           <button
             key={s.id}
             onClick={() => setSource(s.id)}
             className={`flex-1 py-2 text-xs font-medium transition-colors ${
               source === s.id
-                ? "bg-walnut text-white"
-                : "text-walnut-mid hover:bg-parchment-dark/40"
+                ? "bg-gold text-white font-semibold"
+                : "text-walnut-mid hover:bg-[#F5EDDA] hover:text-walnut"
             }`}
           >
             {s.label}
@@ -188,7 +188,7 @@ export default function FreeBooksTab() {
           placeholder={`Search ${activeSource.hint}…`}
           value={query}
           onChange={handleQueryChange}
-          className="w-full bg-card border border-parchment-dark rounded-xl pl-9 pr-4 py-2.5 text-sm text-walnut focus:outline-none focus:ring-2 focus:ring-gold/30 placeholder:text-walnut-mid/40"
+          className="w-full bg-[#FDFAF4] border border-[#C5872B]/25 rounded-xl pl-9 pr-4 py-2.5 text-sm text-walnut focus:outline-none focus:ring-2 focus:ring-gold/30 placeholder:text-walnut-mid/50"
         />
       </div>
 
@@ -201,8 +201,8 @@ export default function FreeBooksTab() {
               onClick={() => handleCategoryClick(cat.id)}
               className={`shrink-0 text-[11px] font-medium px-3 py-1.5 rounded-full border transition-colors ${
                 category === cat.id
-                  ? "bg-walnut text-white border-walnut"
-                  : "bg-card text-walnut-mid border-parchment-dark hover:border-gold/40 hover:text-walnut"
+                  ? "bg-gold text-white border-gold"
+                  : "bg-[#F5EDDA] text-walnut-mid border-[#EDE5D0] hover:border-gold/40 hover:text-walnut"
               }`}
             >
               {cat.label}
