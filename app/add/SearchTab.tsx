@@ -11,7 +11,7 @@ export default function SearchTab() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<GoogleBookVolume[]>([]);
   const [searching, setSearching] = useState(false);
-  const [searchError, setSearchError] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [selected, setSelected] = useState<BookFormData | null>(null);
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
@@ -31,21 +31,29 @@ export default function SearchTab() {
   const doSearch = useCallback(async (q: string) => {
     if (!q.trim()) {
       setResults([]);
-      setSearchError(false);
+      setSearchError(null);
       return;
     }
     setSearching(true);
-    setSearchError(false);
+    setSearchError(null);
     try {
       const res = await fetch(`/api/books/search?q=${encodeURIComponent(q)}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        const msg =
+          res.status === 504
+            ? "Search timed out — try again."
+            : (body.error as string) ?? `Search failed (${res.status})`;
+        throw new Error(msg);
+      }
       const data = await res.json();
       const items: GoogleBookVolume[] = data.items ?? [];
       setResults(items);
-      if (items.length === 0 && q.trim()) setSearchError(false); // empty is fine
-    } catch {
+    } catch (err) {
       setResults([]);
-      setSearchError(true);
+      setSearchError(
+        err instanceof Error ? err.message : "Search failed — try again.",
+      );
     } finally {
       setSearching(false);
     }
@@ -151,7 +159,7 @@ export default function SearchTab() {
 
       {searchError && !searching && (
         <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-600 text-center">
-          Search failed — check your connection or try again.
+          {searchError}
         </div>
       )}
 

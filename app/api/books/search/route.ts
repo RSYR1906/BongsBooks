@@ -10,11 +10,31 @@ export async function GET(request: NextRequest) {
   const apiKey = process.env.GOOGLE_BOOKS_API_KEY;
   const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=10${apiKey ? `&key=${apiKey}` : ""}`;
 
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) {
-    return NextResponse.json({ error: "Google Books API error" }, { status: 502 });
-  }
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
 
-  const data = await res.json();
-  return NextResponse.json({ items: data.items ?? [] });
+  try {
+    const res = await fetch(url, { cache: "no-store", signal: controller.signal });
+    clearTimeout(timer);
+
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      console.error(`[search] Google Books returned ${res.status}: ${body.slice(0, 200)}`);
+      return NextResponse.json(
+        { error: `Google Books API error (${res.status})` },
+        { status: 502 },
+      );
+    }
+
+    const data = await res.json();
+    return NextResponse.json({ items: data.items ?? [] });
+  } catch (err) {
+    clearTimeout(timer);
+    const isTimeout = err instanceof Error && err.name === "AbortError";
+    console.error("[search] fetch error:", isTimeout ? "timeout" : err);
+    return NextResponse.json(
+      { error: isTimeout ? "Search timed out" : "Network error" },
+      { status: isTimeout ? 504 : 502 },
+    );
+  }
 }
