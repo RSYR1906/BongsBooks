@@ -3,10 +3,24 @@ import ExpandableDescription from "@/app/components/ExpandableDescription";
 import type { Book } from "@/lib/database.types";
 import { getSupabase } from "@/lib/supabase";
 import Image from "next/image";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import DeleteBookButton from "./DeleteBookButton";
 import EditBookForm from "./EditBookForm";
 import StatusButton from "./StatusButton";
+
+function isInAppReadable(url: string | null | undefined): boolean {
+  if (!url) return false;
+  try {
+    const u = new URL(url);
+    return (
+      (u.hostname === "gutenberg.org" || u.hostname === "www.gutenberg.org") &&
+      !url.includes(".epub")
+    );
+  } catch {
+    return false;
+  }
+}
 
 export const revalidate = 0;
 
@@ -102,7 +116,25 @@ export default async function BookPage({ params }: Props) {
 
         {/* CTA */}
         <div className="space-y-2.5 mb-6">
-          {b.read_url ? (
+          {isInAppReadable(b.read_url) ? (
+            <>
+              <Link
+                href={`/read?url=${encodeURIComponent(b.read_url!)}&title=${encodeURIComponent(b.title)}&author=${encodeURIComponent(b.author ?? "")}&id=${b.id}`}
+                className="flex items-center justify-center gap-2 w-full bg-[#E8A830] hover:bg-[#F5C068] active:scale-[0.98] text-white font-semibold py-3 rounded-2xl transition-all"
+                style={{ boxShadow: "0 4px 16px rgba(232,168,48,0.22)" }}
+              >
+                📖 Read in App
+              </Link>
+              <a
+                href={b.read_url!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full bg-white hover:bg-[#F5F5FA] active:scale-[0.98] text-[#8D8D93] font-medium py-2 rounded-2xl transition-all text-sm border border-[#EBEBF0]"
+              >
+                Open externally →
+              </a>
+            </>
+          ) : b.read_url ? (
             <a
               href={b.read_url}
               target="_blank"

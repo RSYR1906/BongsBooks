@@ -48,7 +48,6 @@ async function fetchGutendex(q: string, page: number) {
     const cover_url = book.formats["image/jpeg"] ?? null;
     const read_url =
       book.formats["text/html"] ??
-      book.formats["application/epub+zip"] ??
       book.formats["text/plain; charset=utf-8"] ??
       book.formats["text/plain"] ??
       null;
