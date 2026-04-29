@@ -2,14 +2,12 @@
 
 import AppShell from "@/app/components/AppShell";
 import { useState } from "react";
-import CsvTab from "./CsvTab";
 import ScanTab from "./ScanTab";
 import SearchTab from "./SearchTab";
 
 const TABS = [
   { id: "Search", icon: "🔍", label: "Search" },
   { id: "Scan", icon: "📷", label: "Scan" },
-  { id: "CSV", icon: "📄", label: "Import" },
 ] as const;
 
 type TabId = (typeof TABS)[number]["id"];
@@ -47,7 +45,6 @@ export default function AddBookPage() {
             }}
           />
         )}
-        {activeTab === "CSV" && <CsvTab />}
       </div>
     </AppShell>
   );

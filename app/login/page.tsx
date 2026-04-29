@@ -33,75 +33,63 @@ export default function LoginPage() {
   }
 
   return (
-    <main
-      className="min-h-screen flex items-center justify-center px-4"
-      style={{
-        background:
-          "radial-gradient(ellipse 140% 120% at 50% 0%, #5C2A0A 0%, #3D1F00 45%, #1C0A00 100%)",
-      }}
-    >
+    <main className="min-h-screen flex items-center justify-center px-4 bg-[#F2F2F7]">
       <div className="w-full max-w-sm">
         {/* Branding */}
         <div className="text-center mb-8 select-none">
-          <div className="text-7xl mb-3 drop-shadow-lg">📚</div>
-          <h1 className="font-serif text-4xl font-bold text-amber-50 tracking-tight">
+          <div
+            className="w-20 h-20 rounded-[22px] flex items-center justify-center text-4xl mx-auto mb-4"
+            style={{
+              background: "linear-gradient(145deg, #E5A84F 0%, #C5872B 60%, #A0691A 100%)",
+              boxShadow: "0 8px 24px rgba(197,135,43,0.30)",
+            }}
+          >
+            📚
+          </div>
+          <h1 className="font-serif text-3xl font-bold text-[#1C1C1E] tracking-tight">
             Bongs Library
           </h1>
-          <div className="flex items-center gap-3 justify-center mt-3">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[#8B6914]/60" />
-            <span className="text-[#C5872B]/80 text-[10px] tracking-[0.3em] uppercase font-medium">
-              Est. 2024
-            </span>
-            <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[#8B6914]/60" />
-          </div>
-          <p className="text-amber-300/60 text-sm mt-2">
-            Your personal reading world
-          </p>
+          <p className="text-[#636366] text-sm mt-1.5">Your personal reading world</p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="rounded-2xl p-6 space-y-4"
-          style={{
-            background: "#FFFDF7",
-            border: "1px solid rgba(139,105,20,0.3)",
-            boxShadow:
-              "0 20px 60px rgba(0,0,0,0.45), 0 0 0 1px rgba(139,105,20,0.08)",
-          }}
+        <div
+          className="rounded-2xl overflow-hidden"
+          style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)" }}
         >
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-walnut mb-1.5"
+          <form onSubmit={handleSubmit} className="bg-white px-5 py-5 space-y-3">
+            {/* Password field — iOS grouped style */}
+            <div className="bg-[#F2F2F7] rounded-xl overflow-hidden">
+              <div className="flex items-center px-4">
+                <label htmlFor="password" className="text-sm text-[#636366] shrink-0 w-24">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoFocus
+                  className="flex-1 bg-transparent py-3 text-sm text-[#1C1C1E] focus:outline-none placeholder:text-[#AEAEB2]"
+                  placeholder="Required"
+                />
+              </div>
+            </div>
+
+            {error && (
+              <p className="text-sm text-red-500 text-center">{error}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#C5872B] hover:bg-[#E5A84F] disabled:opacity-50 text-white font-semibold rounded-xl px-4 py-3 text-sm transition-colors active:scale-[0.98]"
+              style={{ boxShadow: "0 2px 8px rgba(197,135,43,0.30)" }}
             >
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoFocus
-              className="w-full border border-parchment-dark rounded-xl px-3 py-2.5 text-sm bg-parchment focus:outline-none focus:ring-2 focus:ring-gold/40 text-walnut placeholder:text-walnut-mid/30"
-              placeholder="••••••••"
-            />
-          </div>
-
-          {error && (
-            <p className="text-sm text-red-600 bg-red-50 rounded-xl px-3 py-2 border border-red-100">
-              {error}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gold hover:bg-gold-light disabled:opacity-50 text-white font-semibold rounded-xl px-4 py-2.5 text-sm transition-colors active:scale-[0.98] shadow-md"
-          >
-            {loading ? "Checking…" : "Enter Library"}
-          </button>
-        </form>
+              {loading ? "Checking…" : "Enter Library"}
+            </button>
+          </form>
+        </div>
       </div>
     </main>
   );

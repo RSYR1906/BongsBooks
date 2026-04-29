@@ -1,21 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  /* Light library palette — warm parchment */
-  --parchment: #FDFAF4;         /* page background — warm ivory */
-  --parchment-dark: #EDE5D0;    /* raised borders, input backgrounds */
-  --walnut: #3D1F00;            /* primary text — dark brown */
-  --walnut-mid: #7A5230;        /* secondary text — mid brown */
-  --gold: #C5872B;              /* gold accent */
-  --gold-light: #E5A84F;        /* gold hover */
-  --card-bg: #FFFDF7;           /* card / panel surfaces */
-  --mahogany: #3A1800;          /* deep accent */
-  --library-green: #2D4A3E;     /* library green */
-  --brass: #8B6914;             /* border accents */
-  --aged-paper: #F5EDDA;        /* raised / elevated surfaces */
-  /* legacy */
-  --background: #FDFAF4;
-  --foreground: #3D1F00;
+  /* Clean neutral palette — minimal modern + iOS native */
+  --bg: #FFFFFF;
+  --bg-secondary: #F2F2F7;  /* iOS system grouped background */
+  --label: #1C1C1E;          /* primary text */
+  --label-secondary: #636366; /* secondary text */
+  --label-tertiary: #AEAEB2;  /* placeholder / disabled */
+  --separator: rgba(60, 60, 67, 0.12);
+  --accent: #C5872B;          /* gold brand accent */
+  --accent-light: #E5A84F;    /* gold hover */
+  --accent-bg: #FEF3E2;       /* tinted gold fill */
+  /* Component aliases — referenced across codebase */
+  --parchment: #F2F2F7;
+  --parchment-dark: #E5E5EA;
+  --walnut: #1C1C1E;
+  --walnut-mid: #636366;
+  --gold: #C5872B;
+  --gold-light: #E5A84F;
+  --card-bg: #FFFFFF;
+  --aged-paper: #F2F2F7;
+  --background: #F2F2F7;
+  --foreground: #1C1C1E;
 }
 
 @theme inline {
@@ -28,10 +34,9 @@
   --color-gold: var(--gold);
   --color-gold-light: var(--gold-light);
   --color-card: var(--card-bg);
-  --color-mahogany: var(--mahogany);
-  --color-library-green: var(--library-green);
-  --color-brass: var(--brass);
   --color-aged-paper: var(--aged-paper);
+  --color-accent: var(--accent);
+  --color-accent-bg: var(--accent-bg);
   --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-lora);
 }
@@ -42,7 +47,7 @@
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #EDE5D0 25%, #F5EDDA 50%, #EDE5D0 75%);
+  background: linear-gradient(90deg, #E5E5EA 25%, #F2F2F7 50%, #E5E5EA 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }
@@ -55,37 +60,14 @@
   display: none;
 }
 
-/* Wood-panel grain — sticky header */
-.wood-panel {
-  background-image:
-    repeating-linear-gradient(
-      93deg,
-      transparent 0px, transparent 40px,
-      rgba(255, 255, 255, 0.012) 40px, rgba(255, 255, 255, 0.012) 42px,
-      transparent 42px, transparent 72px,
-      rgba(0, 0, 0, 0.06) 72px, rgba(0, 0, 0, 0.06) 73px
-    ),
-    linear-gradient(180deg, #3A1800 0%, #1C0800 55%, #0E0400 100%);
-}
-
-/* Same grain, inverted gradient — bottom nav */
-.wood-panel-floor {
-  background-image:
-    repeating-linear-gradient(
-      93deg,
-      transparent 0px, transparent 40px,
-      rgba(255, 255, 255, 0.012) 40px, rgba(255, 255, 255, 0.012) 42px,
-      transparent 42px, transparent 72px,
-      rgba(0, 0, 0, 0.06) 72px, rgba(0, 0, 0, 0.06) 73px
-    ),
-    linear-gradient(0deg, #0E0400 0%, #1C0800 60%, #2A1200 100%);
+/* Frosted glass — nav bars */
+.glass-panel {
+  background: rgba(242, 242, 247, 0.82);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
 }
 
 body {
-  background-color: var(--parchment);
+  background-color: var(--bg-secondary);
   color: var(--foreground);
-  /* Warm parchment glow */
-  background-image:
-    radial-gradient(ellipse 90% 55% at 10% 0%, rgba(197, 135, 43, 0.06) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 45% at 90% 100%, rgba(139, 105, 20, 0.03) 0%, transparent 60%);
 }

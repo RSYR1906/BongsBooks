@@ -16,17 +16,18 @@ export default function DiscoverClient() {
 
   return (
     <div className="space-y-4">
-      {/* Tab switcher */}
-      <div className="flex bg-[#FFFDF7] rounded-xl border border-[#EDE5D0] overflow-hidden shadow-sm">
+      {/* Segmented tab control */}
+      <div className="bg-[#E5E5EA] rounded-xl p-1 flex">
         {TABS.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
+            className={`flex-1 py-2 text-sm font-medium rounded-[9px] transition-all ${
               activeTab === tab.id
-                ? "bg-gold text-white font-semibold"
-                : "text-walnut-mid hover:bg-[#F5EDDA] hover:text-walnut"
+                ? "bg-white text-[#1C1C1E] font-semibold"
+                : "text-[#636366]"
             }`}
+            style={activeTab === tab.id ? { boxShadow: "0 1px 4px rgba(0,0,0,0.12)" } : {}}
           >
             {tab.label}
           </button>

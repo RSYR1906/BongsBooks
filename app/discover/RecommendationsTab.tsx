@@ -3,73 +3,136 @@
 import SkeletonCard from "@/app/components/SkeletonCard";
 import type { GoogleBookVolume } from "@/lib/books";
 import { volumeToFormData } from "@/lib/books";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import DiscoverBookCard, { type AddState } from "./DiscoverBookCard";
 
 interface RecItem {
   volume: GoogleBookVolume;
   addState: AddState;
-  readUrl: string | null; // null = not found / still loading
+  readUrl: string | null;
 }
 
 export default function RecommendationsTab() {
   const [items, setItems] = useState<RecItem[]>([]);
   const [basis, setBasis] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(false);
+  const offsetRef = useRef(0);
+  const seenIds = useRef(new Set<string>());
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
-  const loadRecs = useCallback(async () => {
-    setLoading(true);
-    setError(false);
+  function resolveReadUrls(volumes: GoogleBookVolume[], startIndex: number) {
+    volumes.slice(0, 6).forEach((volume, i) => {
+      const info = volume.volumeInfo;
+      const isbn =
+        info.industryIdentifiers?.find(
+          (id) => id.type === "ISBN_13" || id.type === "ISBN_10",
+        )?.identifier ?? "";
+      const params = new URLSearchParams({
+        isbn,
+        title: info.title,
+        author: info.authors?.[0] ?? "",
+      });
+      fetch(`/api/books/find-read-url?${params}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (d?.url) {
+            setItems((prev) =>
+              prev.map((it, idx) =>
+                idx === startIndex + i ? { ...it, readUrl: d.url } : it,
+              ),
+            );
+          }
+        })
+        .catch(() => {});
+    });
+  }
+
+  const fetchPage = useCallback(async (offset: number, isInitial: boolean) => {
+    if (isInitial) setLoading(true);
+    else setLoadingMore(true);
+
     try {
-      const res = await fetch("/api/recommendations");
+      const res = await fetch(`/api/recommendations?offset=${offset}`);
       if (!res.ok) throw new Error("Failed");
       const data = await res.json();
-      const volumes = data.results as GoogleBookVolume[];
-      const mapped = volumes.map((v) => ({
+      const volumes = (data.results ?? []) as GoogleBookVolume[];
+
+      if (volumes.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      // Deduplicate across pages
+      const fresh = volumes.filter((v) => !seenIds.current.has(v.id));
+      fresh.forEach((v) => seenIds.current.add(v.id));
+
+      if (fresh.length === 0) {
+        setHasMore(false);
+        return;
+      }
+
+      const newItems: RecItem[] = fresh.map((v) => ({
         volume: v,
-        addState: "idle" as AddState,
+        addState: "idle",
         readUrl: null,
       }));
-      setItems(mapped);
-      setBasis(data.basis ?? null);
 
-      // Background: resolve free read URLs — limit to first 6 to avoid
-      // overwhelming the browser connection pool with concurrent requests
-      volumes.slice(0, 6).forEach((volume, index) => {
-        const info = volume.volumeInfo;
-        const isbn =
-          info.industryIdentifiers?.find(
-            (id) => id.type === "ISBN_13" || id.type === "ISBN_10",
-          )?.identifier ?? "";
-        const params = new URLSearchParams({
-          isbn,
-          title: info.title,
-          author: info.authors?.[0] ?? "",
+      if (isInitial) {
+        setBasis(data.basis ?? null);
+        setItems(newItems);
+        resolveReadUrls(fresh, 0);
+      } else {
+        setItems((prev) => {
+          resolveReadUrls(fresh, prev.length);
+          return [...prev, ...newItems];
         });
-        fetch(`/api/books/find-read-url?${params}`)
-          .then((r) => (r.ok ? r.json() : null))
-          .then((d) => {
-            if (d?.url) {
-              setItems((prev) =>
-                prev.map((it, i) =>
-                  i === index ? { ...it, readUrl: d.url } : it,
-                ),
-              );
-            }
-          })
-          .catch(() => {});
-      });
+      }
+
+      offsetRef.current = offset + 20;
     } catch {
-      setError(true);
+      if (isInitial) setError(true);
     } finally {
-      setLoading(false);
+      if (isInitial) setLoading(false);
+      else setLoadingMore(false);
     }
   }, []);
+
+  // Initial load
+  const loadRecs = useCallback(() => {
+    seenIds.current.clear();
+    offsetRef.current = 0;
+    setHasMore(true);
+    setError(false);
+    fetchPage(0, true);
+  }, [fetchPage]);
 
   useEffect(() => {
     loadRecs();
   }, [loadRecs]);
+
+  // Infinite scroll — watch sentinel
+  useEffect(() => {
+    if (observerRef.current) observerRef.current.disconnect();
+
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loadingMore && hasMore) {
+          fetchPage(offsetRef.current, false);
+        }
+      },
+      { rootMargin: "200px" },
+    );
+
+    if (sentinelRef.current) {
+      observerRef.current.observe(sentinelRef.current);
+    }
+
+    return () => observerRef.current?.disconnect();
+  }, [fetchPage, loadingMore, hasMore]);
 
   async function handleAdd(index: number) {
     const item = items[index];
@@ -84,7 +147,6 @@ export default function RecommendationsTab() {
     try {
       const form = volumeToFormData(item.volume);
 
-      // Use already-resolved URL or try to find one
       if (item.readUrl) {
         form.read_url = item.readUrl;
       } else {
@@ -176,24 +238,37 @@ export default function RecommendationsTab() {
           Add some books to your library to get personalised recommendations!
         </p>
       ) : (
-        <div className="grid grid-cols-3 gap-3">
-          {items.map((item, index) => {
-            const info = item.volume.volumeInfo;
-            const cover =
-              info.imageLinks?.thumbnail?.replace(/^http:/, "https:") ?? null;
-            return (
-              <DiscoverBookCard
-                key={item.volume.id}
-                title={info.title}
-                author={info.authors?.join(", ")}
-                cover_url={cover}
-                read_url={item.readUrl}
-                addState={item.addState}
-                onAdd={() => handleAdd(index)}
-              />
-            );
-          })}
-        </div>
+        <>
+          <div className="grid grid-cols-3 gap-3">
+            {items.map((item, index) => {
+              const info = item.volume.volumeInfo;
+              const cover =
+                info.imageLinks?.thumbnail?.replace(/^http:/, "https:") ?? null;
+              return (
+                <DiscoverBookCard
+                  key={item.volume.id}
+                  title={info.title}
+                  author={info.authors?.join(", ")}
+                  cover_url={cover}
+                  read_url={item.readUrl}
+                  addState={item.addState}
+                  onAdd={() => handleAdd(index)}
+                />
+              );
+            })}
+          </div>
+
+          {/* Sentinel — triggers next page load when scrolled into view */}
+          <div ref={sentinelRef} className="h-1" />
+
+          {loadingMore && (
+            <div className="grid grid-cols-3 gap-3 pt-1">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );

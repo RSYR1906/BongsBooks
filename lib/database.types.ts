@@ -24,6 +24,7 @@ export interface Database {
           open_library_key: string | null;
           read_url: string | null;
           added_at: string;
+          status: "want_to_read" | "reading" | "read" | null;
         };
         Insert: {
           id?: string;
@@ -39,6 +40,7 @@ export interface Database {
           open_library_key?: string | null;
           read_url?: string | null;
           added_at?: string;
+          status?: "want_to_read" | "reading" | "read" | null;
         };
         Update: Partial<Database["public"]["Tables"]["books"]["Insert"]>;
         Relationships: [];

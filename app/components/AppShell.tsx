@@ -11,6 +11,63 @@ interface Props {
   children: ReactNode;
 }
 
+function BooksIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="3" width="5" height="18" rx="1" />
+      <rect x="10" y="3" width="5" height="18" rx="1" />
+      <path d="M17 5.5l4 1v13l-4-1V5.5z" />
+    </svg>
+  );
+}
+
+function GlobeIcon({ size = 22 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 3c2.5 2.5 4 5.5 4 9s-1.5 6.5-4 9" />
+      <path d="M12 3c-2.5 2.5-4 5.5-4 9s1.5 6.5 4 9" />
+      <line x1="3.27" y1="9" x2="20.73" y2="9" />
+      <line x1="3.27" y1="15" x2="20.73" y2="15" />
+    </svg>
+  );
+}
+
+function ChevronLeftIcon() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M15 18l-6-6 6-6" />
+    </svg>
+  );
+}
+
 export default function AppShell({
   title,
   backHref,
@@ -19,52 +76,69 @@ export default function AppShell({
 }: Props) {
   const pathname = usePathname();
 
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    window.location.href = "/login";
+  }
+
   const navItems = [
     {
       href: "/",
-      icon: "📚",
       label: "Library",
       active: pathname === "/" || pathname.startsWith("/book/"),
     },
     {
       href: "/discover",
-      icon: "🔭",
       label: "Discover",
       active: pathname.startsWith("/discover"),
     },
   ];
 
   return (
-    <div className="min-h-screen bg-parchment">
+    <div className="min-h-screen bg-[#F2F2F7]">
       {/* Top bar */}
       <header
-        className="wood-panel text-white sticky top-0 z-20 shadow-lg"
-        style={{ borderBottom: "2px solid #8B6914" }}
+        className="glass-panel sticky top-0 z-20"
+        style={{ borderBottom: "1px solid rgba(60,60,67,0.12)" }}
       >
-        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
+        <div
+          className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3"
+          style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
+        >
           {backHref ? (
             <>
               <Link
                 href={backHref}
-                className="text-amber-300 hover:text-white transition-colors text-sm font-medium shrink-0"
+                className="flex items-center gap-0.5 text-[#C5872B] text-sm font-medium shrink-0 -ml-1"
               >
-                ← Back
+                <ChevronLeftIcon />
+                Back
               </Link>
               {title && (
-                <h1 className="text-sm font-medium line-clamp-1 flex-1">
+                <h1 className="text-sm font-semibold text-[#1C1C1E] line-clamp-1 flex-1 text-center">
                   {title}
                 </h1>
               )}
             </>
           ) : (
             <div className="flex items-center gap-2 flex-1">
-              <span className="text-xl">📚</span>
-              <h1 className="font-serif text-lg font-semibold">
+              <span className="text-[#C5872B]">
+                <BooksIcon size={20} />
+              </span>
+              <h1 className="font-serif text-lg font-semibold text-[#1C1C1E]">
                 {title ?? "My Library"}
               </h1>
             </div>
           )}
-          {rightSlot && <div className="shrink-0">{rightSlot}</div>}
+          <div className="flex items-center gap-3 shrink-0">
+            {rightSlot}
+            <button
+              onClick={handleLogout}
+              className="text-[#AEAEB2] hover:text-[#636366] transition-colors text-xs"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
       </header>
 
@@ -73,9 +147,9 @@ export default function AppShell({
 
       {/* Bottom navigation */}
       <nav
-        className="wood-panel-floor fixed bottom-0 inset-x-0 z-20"
+        className="glass-panel fixed bottom-0 inset-x-0 z-20"
         style={{
-          borderTop: "2px solid #8B6914",
+          borderTop: "1px solid rgba(60,60,67,0.12)",
           paddingBottom: "env(safe-area-inset-bottom, 0px)",
         }}
       >
@@ -84,12 +158,10 @@ export default function AppShell({
           <Link
             href={navItems[0].href}
             className={`flex flex-col items-center gap-0.5 px-3 transition-colors ${
-              navItems[0].active
-                ? "text-[#C5872B]"
-                : "text-amber-200/50 hover:text-amber-200"
+              navItems[0].active ? "text-[#C5872B]" : "text-[#AEAEB2]"
             }`}
           >
-            <span className="text-2xl leading-none">{navItems[0].icon}</span>
+            <BooksIcon size={22} />
             <span className="text-[10px] font-medium">{navItems[0].label}</span>
           </Link>
 
@@ -99,11 +171,10 @@ export default function AppShell({
             className="flex flex-col items-center gap-0.5 -mt-6 active:scale-95 transition-transform"
           >
             <div
-              className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold shadow-xl border-2 ${
-                pathname.startsWith("/add")
-                  ? "bg-[#E5A84F] border-[#E5A84F]/30 text-white"
-                  : "bg-[#C5872B] border-[#C5872B]/30 text-white"
-              }`}
+              className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl font-semibold shadow-lg ${
+                pathname.startsWith("/add") ? "bg-[#E5A84F]" : "bg-[#C5872B]"
+              } text-white`}
+              style={{ boxShadow: "0 4px 16px rgba(197,135,43,0.35)" }}
             >
               +
             </div>
@@ -111,7 +182,7 @@ export default function AppShell({
               className={`text-[10px] font-medium ${
                 pathname.startsWith("/add")
                   ? "text-[#C5872B]"
-                  : "text-amber-200/50"
+                  : "text-[#AEAEB2]"
               }`}
             >
               Add
@@ -122,12 +193,10 @@ export default function AppShell({
           <Link
             href={navItems[1].href}
             className={`flex flex-col items-center gap-0.5 px-3 transition-colors ${
-              navItems[1].active
-                ? "text-[#C5872B]"
-                : "text-amber-200/50 hover:text-amber-200"
+              navItems[1].active ? "text-[#C5872B]" : "text-[#AEAEB2]"
             }`}
           >
-            <span className="text-2xl leading-none">{navItems[1].icon}</span>
+            <GlobeIcon size={22} />
             <span className="text-[10px] font-medium">{navItems[1].label}</span>
           </Link>
         </div>

@@ -17,10 +17,11 @@ function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
 async function fetchGoogleBooks(
   query: string,
   apiKey: string | undefined,
+  startIndex = 0,
 ): Promise<GoogleBookVolume[]> {
   const url =
     `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(query)}` +
-    `&maxResults=10&orderBy=relevance${apiKey ? `&key=${apiKey}` : ""}`;
+    `&maxResults=15&startIndex=${startIndex}&orderBy=relevance${apiKey ? `&key=${apiKey}` : ""}`;
   try {
     // cache: "no-store" — never serve a stale cached response on Vercel
     const res = await fetch(url, { cache: "no-store" });
@@ -36,18 +37,20 @@ async function fetchGoogleBooks(
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const offset = Math.max(0, parseInt(searchParams.get("offset") ?? "0", 10));
   const apiKey = process.env.GOOGLE_BOOKS_API_KEY;
 
   try {
-    return await withTimeout(buildResponse(apiKey), TIMEOUT_MS);
+    return await withTimeout(buildResponse(apiKey, offset), TIMEOUT_MS);
   } catch {
     // Timeout or unexpected error — return generic fallback
     return NextResponse.json({ results: [], basis: null });
   }
 }
 
-async function buildResponse(apiKey: string | undefined) {
+async function buildResponse(apiKey: string | undefined, offset: number) {
   const { data: books, error } = await getSupabase()
     .from("books")
     .select("title, author, genre, google_books_id, isbn");
@@ -60,6 +63,7 @@ async function buildResponse(apiKey: string | undefined) {
     const fallback = await fetchGoogleBooks(
       "subject:fiction bestseller popular",
       apiKey,
+      offset,
     );
     return NextResponse.json({ results: fallback, basis: null });
   }
@@ -105,7 +109,7 @@ async function buildResponse(apiKey: string | undefined) {
   if (queries.length === 0) queries.push("subject:fiction bestseller");
 
   const allResults = await Promise.all(
-    queries.map((q) => fetchGoogleBooks(q, apiKey)),
+    queries.map((q) => fetchGoogleBooks(q, apiKey, offset)),
   );
 
   // Merge and deduplicate, skip already-owned
@@ -135,6 +139,7 @@ async function buildResponse(apiKey: string | undefined) {
     const fallback = await fetchGoogleBooks(
       "subject:fiction bestseller popular",
       apiKey,
+      offset,
     );
     return NextResponse.json({ results: fallback, basis: null });
   }
