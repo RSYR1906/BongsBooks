@@ -54,8 +54,10 @@ export function volumeToFormData(volume: GoogleBookVolume): BookFormData {
     genre: info.categories ?? [],
     published_date: info.publishedDate ?? "",
     page_count: info.pageCount ?? null,
-    google_books_id: volume.id,
-    open_library_key: "",
+    google_books_id: volume.id.startsWith("ol-") ? "" : volume.id,
+    open_library_key: volume.id.startsWith("ol-")
+      ? volume.id.slice(3) // strip "ol-" prefix to get the raw work ID
+      : "",
     read_url: "",
   };
 }
