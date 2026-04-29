@@ -27,7 +27,13 @@ type Theme = "light" | "sepia" | "dark";
 
 const THEMES: Record<
   Theme,
-  { bg: string; text: string; secondary: string; border: string; header: string }
+  {
+    bg: string;
+    text: string;
+    secondary: string;
+    border: string;
+    header: string;
+  }
 > = {
   light: {
     bg: "bg-white",
@@ -106,8 +112,7 @@ function ReaderContent() {
   useEffect(() => {
     function onScroll() {
       const scrolled = window.scrollY;
-      const total =
-        document.documentElement.scrollHeight - window.innerHeight;
+      const total = document.documentElement.scrollHeight - window.innerHeight;
       setProgress(total > 0 ? (scrolled / total) * 100 : 0);
 
       // Hide controls when scrolling down, show when scrolling up
@@ -123,13 +128,20 @@ function ReaderContent() {
   const backHref = bookId ? `/book/${bookId}` : "/";
 
   return (
-    <div className={`min-h-screen transition-colors duration-200 ${t.bg} ${t.text}`}>
+    <div
+      className={`min-h-screen transition-colors duration-200 ${t.bg} ${t.text}`}
+    >
       {/* Sticky header */}
       <header
         className={`sticky top-0 z-20 ${t.header} border-b ${t.border} transition-all duration-200 ${
-          showControls ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+          showControls
+            ? "translate-y-0 opacity-100"
+            : "-translate-y-full opacity-0"
         }`}
-        style={{ backdropFilter: "saturate(180%) blur(20px)", WebkitBackdropFilter: "saturate(180%) blur(20px)" }}
+        style={{
+          backdropFilter: "saturate(180%) blur(20px)",
+          WebkitBackdropFilter: "saturate(180%) blur(20px)",
+        }}
       >
         <div className="max-w-2xl mx-auto px-4 h-13 py-3 flex items-center gap-2">
           {/* Back */}
@@ -143,7 +155,9 @@ function ReaderContent() {
 
           {/* Title */}
           <div className="flex-1 min-w-0 text-center px-2">
-            <p className="text-xs font-semibold truncate leading-tight">{title}</p>
+            <p className="text-xs font-semibold truncate leading-tight">
+              {title}
+            </p>
             {author && (
               <p className={`text-[10px] truncate ${t.secondary}`}>{author}</p>
             )}
@@ -155,14 +169,18 @@ function ReaderContent() {
               onClick={() => setFontIdx((i) => Math.max(0, i - 1))}
               disabled={fontIdx === 0}
               className={`w-8 h-8 flex items-center justify-center text-[11px] font-bold rounded-lg transition-opacity ${
-                fontIdx === 0 ? "opacity-25 cursor-not-allowed" : `opacity-60 hover:opacity-100 ${t.text}`
+                fontIdx === 0
+                  ? "opacity-25 cursor-not-allowed"
+                  : `opacity-60 hover:opacity-100 ${t.text}`
               }`}
               aria-label="Decrease font size"
             >
               A-
             </button>
             <button
-              onClick={() => setFontIdx((i) => Math.min(FONT_SIZES.length - 1, i + 1))}
+              onClick={() =>
+                setFontIdx((i) => Math.min(FONT_SIZES.length - 1, i + 1))
+              }
               disabled={fontIdx === FONT_SIZES.length - 1}
               className={`w-8 h-8 flex items-center justify-center text-sm font-bold rounded-lg transition-opacity ${
                 fontIdx === FONT_SIZES.length - 1
@@ -210,7 +228,9 @@ function ReaderContent() {
         {error && (
           <div className="text-center py-24">
             <p className="text-4xl mb-4">⚠️</p>
-            <p className="font-semibold text-lg mb-2">Couldn&apos;t load this book</p>
+            <p className="font-semibold text-lg mb-2">
+              Couldn&apos;t load this book
+            </p>
             <p className={`text-sm mb-6 ${t.secondary}`}>{error}</p>
             <Link
               href={backHref}
@@ -224,12 +244,16 @@ function ReaderContent() {
         {!loading && !error && paragraphs.length === 0 && (
           <div className="text-center py-24">
             <p className="text-4xl mb-4">📄</p>
-            <p className={`text-sm ${t.secondary}`}>No readable content found in this file.</p>
+            <p className={`text-sm ${t.secondary}`}>
+              No readable content found in this file.
+            </p>
           </div>
         )}
 
         {!loading && !error && paragraphs.length > 0 && (
-          <div className={`font-serif leading-[1.8] ${fontSize} space-y-[1.5em]`}>
+          <div
+            className={`font-serif leading-[1.8] ${fontSize} space-y-[1.5em]`}
+          >
             {paragraphs.map((p, i) => (
               <p key={i}>{p}</p>
             ))}
@@ -243,7 +267,10 @@ function ReaderContent() {
           className={`fixed bottom-0 inset-x-0 text-center py-2 text-xs ${t.secondary} ${t.header} border-t ${t.border} transition-all duration-200 ${
             showControls ? "translate-y-0" : "translate-y-full"
           }`}
-          style={{ backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
+          style={{
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+          }}
         >
           {Math.round(progress)}% read
         </div>
