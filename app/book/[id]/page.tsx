@@ -7,6 +7,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import DeleteBookButton from "./DeleteBookButton";
 import EditBookForm from "./EditBookForm";
+import ReadingNoteCard from "./ReadingNoteCard";
 import StatusButton from "./StatusButton";
 
 function isInAppReadable(url: string | null | undefined): boolean {
@@ -170,6 +171,9 @@ export default async function BookPage({ params }: Props) {
             <ExpandableDescription text={b.description} />
           </div>
         )}
+
+        {/* Reading note */}
+        <ReadingNoteCard id={b.id} note={b.reading_note} />
 
         {/* Edit + Danger zone */}
         <div className="mb-10 space-y-3">
