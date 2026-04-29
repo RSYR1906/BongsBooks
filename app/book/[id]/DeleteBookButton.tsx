@@ -23,10 +23,12 @@ export default function DeleteBookButton({ id }: { id: string }) {
   if (state === "error") {
     return (
       <div className="text-center space-y-2">
-        <p className="text-sm text-red-500">Failed to remove book. Please try again.</p>
+        <p className="text-sm text-red-500">
+          Failed to remove book. Please try again.
+        </p>
         <button
           onClick={() => setState("idle")}
-          className="text-sm text-[#636366] underline-offset-2 hover:underline"
+          className="text-sm text-[#8D8D93] underline-offset-2 hover:underline"
         >
           Dismiss
         </button>
@@ -45,7 +47,7 @@ export default function DeleteBookButton({ id }: { id: string }) {
         </button>
         <button
           onClick={() => setState("idle")}
-          className="flex-1 py-2.5 bg-[#F2F2F7] text-[#636366] text-sm font-medium rounded-xl hover:bg-[#E5E5EA] transition-all"
+          className="flex-1 py-2.5 bg-[#F5F5FA] text-[#8D8D93] text-sm font-medium rounded-xl hover:bg-[#EBEBF0] transition-all"
         >
           Cancel
         </button>

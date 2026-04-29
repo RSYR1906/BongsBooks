@@ -56,7 +56,7 @@ export default function EditBookForm({ book }: { book: Book }) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="w-full py-2.5 text-[#C5872B] text-sm font-medium rounded-2xl active:scale-[0.98] transition-all"
+        className="w-full py-2.5 text-[#E8A830] text-sm font-medium rounded-2xl active:scale-[0.98] transition-all"
       >
         Edit book details
       </button>
@@ -64,47 +64,57 @@ export default function EditBookForm({ book }: { book: Book }) {
   }
 
   return (
-    <div className="rounded-2xl overflow-hidden bg-[#F2F2F7]">
+    <div className="rounded-2xl overflow-hidden bg-[#F5F5FA]">
       <div className="px-4 pt-4 pb-2">
-        <h3 className="font-semibold text-[#1C1C1E] text-sm">Edit details</h3>
+        <h3 className="font-semibold text-[#3D3D45] text-sm">Edit details</h3>
       </div>
       <div className="bg-white rounded-xl mx-3 mb-3 overflow-hidden">
         <div className={rowCls}>
-          <span className="text-xs text-[#636366] w-20 shrink-0 pt-2.5">Title *</span>
+          <span className="text-xs text-[#8D8D93] w-20 shrink-0 pt-2.5">
+            Title *
+          </span>
           <input
-            className="flex-1 bg-transparent py-2 text-sm text-[#1C1C1E] focus:outline-none placeholder:text-[#AEAEB2]"
+            className="flex-1 bg-transparent py-2 text-sm text-[#3D3D45] focus:outline-none placeholder:text-[#C2C2C7]"
             placeholder="Title"
             {...field("title")}
           />
         </div>
         <div className={rowCls}>
-          <span className="text-xs text-[#636366] w-20 shrink-0 pt-2.5">Author</span>
+          <span className="text-xs text-[#8D8D93] w-20 shrink-0 pt-2.5">
+            Author
+          </span>
           <input
-            className="flex-1 bg-transparent py-2 text-sm text-[#1C1C1E] focus:outline-none placeholder:text-[#AEAEB2]"
+            className="flex-1 bg-transparent py-2 text-sm text-[#3D3D45] focus:outline-none placeholder:text-[#C2C2C7]"
             placeholder="Author"
             {...field("author")}
           />
         </div>
         <div className={rowCls}>
-          <span className="text-xs text-[#636366] w-20 shrink-0 pt-2.5">Genres</span>
+          <span className="text-xs text-[#8D8D93] w-20 shrink-0 pt-2.5">
+            Genres
+          </span>
           <input
-            className="flex-1 bg-transparent py-2 text-sm text-[#1C1C1E] focus:outline-none placeholder:text-[#AEAEB2]"
+            className="flex-1 bg-transparent py-2 text-sm text-[#3D3D45] focus:outline-none placeholder:text-[#C2C2C7]"
             placeholder="Fiction, Historical, …"
             {...field("genre")}
           />
         </div>
         <div className={rowCls}>
-          <span className="text-xs text-[#636366] w-20 shrink-0 pt-2.5">Cover URL</span>
+          <span className="text-xs text-[#8D8D93] w-20 shrink-0 pt-2.5">
+            Cover URL
+          </span>
           <input
-            className="flex-1 bg-transparent py-2 text-sm text-[#1C1C1E] focus:outline-none placeholder:text-[#AEAEB2]"
+            className="flex-1 bg-transparent py-2 text-sm text-[#3D3D45] focus:outline-none placeholder:text-[#C2C2C7]"
             placeholder="https://…"
             {...field("cover_url")}
           />
         </div>
         <div className={rowCls}>
-          <span className="text-xs text-[#636366] w-20 shrink-0 pt-2.5">About</span>
+          <span className="text-xs text-[#8D8D93] w-20 shrink-0 pt-2.5">
+            About
+          </span>
           <textarea
-            className="flex-1 bg-transparent py-2 text-sm text-[#1C1C1E] focus:outline-none resize-none h-20 placeholder:text-[#AEAEB2]"
+            className="flex-1 bg-transparent py-2 text-sm text-[#3D3D45] focus:outline-none resize-none h-20 placeholder:text-[#C2C2C7]"
             placeholder="Description…"
             {...field("description")}
           />
@@ -113,14 +123,14 @@ export default function EditBookForm({ book }: { book: Book }) {
       <div className="flex gap-2 px-3 pb-4">
         <button
           onClick={() => setOpen(false)}
-          className="flex-1 py-2.5 text-sm font-medium bg-white border border-[#E5E5EA] text-[#636366] rounded-xl hover:bg-[#F2F2F7] transition-colors"
+          className="flex-1 py-2.5 text-sm font-medium bg-white border border-[#EBEBF0] text-[#8D8D93] rounded-xl hover:bg-[#F5F5FA] transition-colors"
         >
           Cancel
         </button>
         <button
           onClick={handleSave}
           disabled={saving || !form.title.trim()}
-          className="flex-1 py-2.5 text-sm font-semibold bg-[#C5872B] text-white rounded-xl hover:bg-[#E5A84F] disabled:opacity-50 active:scale-[0.98] transition-all"
+          className="flex-1 py-2.5 text-sm font-semibold bg-[#E8A830] text-white rounded-xl hover:bg-[#F5C068] disabled:opacity-50 active:scale-[0.98] transition-all"
         >
           {saving ? "Saving…" : "Save"}
         </button>

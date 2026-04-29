@@ -44,7 +44,7 @@ export default async function BookPage({ params }: Props) {
             unoptimized={isGoogleCover}
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1C1C1E]/60 to-[#F2F2F7]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1C1C1E]/60 to-[#F5F5FA]" />
       </div>
 
       <div className="max-w-2xl mx-auto px-4">
@@ -70,13 +70,13 @@ export default async function BookPage({ params }: Props) {
 
         {/* Title + meta */}
         <div className="text-center mb-5">
-          <h2 className="font-serif text-2xl font-bold text-[#1C1C1E] leading-tight">
+          <h2 className="font-serif text-2xl font-bold text-[#3D3D45] leading-tight">
             {b.title}
           </h2>
           {b.author && (
-            <p className="text-[#636366] font-medium mt-1">{b.author}</p>
+            <p className="text-[#8D8D93] font-medium mt-1">{b.author}</p>
           )}
-          <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-0.5 text-xs text-[#AEAEB2]">
+          <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-0.5 text-xs text-[#C2C2C7]">
             {b.published_date && <span>Published {b.published_date}</span>}
             {b.page_count && <span>{b.page_count} pages</span>}
             {b.isbn && <span>ISBN {b.isbn}</span>}
@@ -86,7 +86,7 @@ export default async function BookPage({ params }: Props) {
               {b.genre.map((g) => (
                 <span
                   key={g}
-                  className="text-xs bg-[#F2F2F7] text-[#636366] px-2.5 py-1 rounded-full font-medium"
+                  className="text-xs bg-[#F5F5FA] text-[#8D8D93] px-2.5 py-1 rounded-full font-medium"
                 >
                   {g}
                 </span>
@@ -107,21 +107,21 @@ export default async function BookPage({ params }: Props) {
               href={b.read_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full bg-[#C5872B] hover:bg-[#E5A84F] active:scale-[0.98] text-white font-semibold py-3 rounded-2xl transition-all"
-              style={{ boxShadow: "0 4px 16px rgba(197,135,43,0.30)" }}
+              className="flex items-center justify-center gap-2 w-full bg-[#E8A830] hover:bg-[#F5C068] active:scale-[0.98] text-white font-semibold py-3 rounded-2xl transition-all"
+              style={{ boxShadow: "0 4px 16px rgba(232,168,48,0.22)" }}
             >
               📖 Read Online — Free
             </a>
           ) : (
             <>
-              <div className="bg-[#F2F2F7] rounded-2xl p-3.5 text-center text-sm text-[#636366]">
+              <div className="bg-[#F5F5FA] rounded-2xl p-3.5 text-center text-sm text-[#8D8D93]">
                 No free digital copy found for this book.
               </div>
               <a
                 href={amazonUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full bg-white hover:bg-[#F2F2F7] active:scale-[0.98] text-[#1C1C1E] font-medium py-2.5 rounded-2xl transition-all text-sm border border-[#E5E5EA]"
+                className="flex items-center justify-center gap-2 w-full bg-white hover:bg-[#F5F5FA] active:scale-[0.98] text-[#3D3D45] font-medium py-2.5 rounded-2xl transition-all text-sm border border-[#EBEBF0]"
               >
                 Find on Amazon →
               </a>
@@ -131,8 +131,8 @@ export default async function BookPage({ params }: Props) {
 
         {/* Description */}
         {b.description && (
-          <div className="mb-5 bg-[#F2F2F7] rounded-2xl p-4">
-            <h3 className="font-serif font-semibold text-[#1C1C1E] mb-2">
+          <div className="mb-5 bg-[#F5F5FA] rounded-2xl p-4">
+            <h3 className="font-serif font-semibold text-[#3D3D45] mb-2">
               About this book
             </h3>
             <ExpandableDescription text={b.description} />

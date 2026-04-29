@@ -95,7 +95,7 @@ export default function AppShell({
   ];
 
   return (
-    <div className="min-h-screen bg-[#F2F2F7]">
+    <div className="min-h-screen bg-[#F5F5FA]">
       {/* Top bar */}
       <header
         className="glass-panel sticky top-0 z-20"
@@ -109,23 +109,23 @@ export default function AppShell({
             <>
               <Link
                 href={backHref}
-                className="flex items-center gap-0.5 text-[#C5872B] text-sm font-medium shrink-0 -ml-1"
+                className="flex items-center gap-0.5 text-[#E8A830] text-sm font-medium shrink-0 -ml-1"
               >
                 <ChevronLeftIcon />
                 Back
               </Link>
               {title && (
-                <h1 className="text-sm font-semibold text-[#1C1C1E] line-clamp-1 flex-1 text-center">
+                <h1 className="text-sm font-semibold text-[#3D3D45] line-clamp-1 flex-1 text-center">
                   {title}
                 </h1>
               )}
             </>
           ) : (
             <div className="flex items-center gap-2 flex-1">
-              <span className="text-[#C5872B]">
+              <span className="text-[#E8A830]">
                 <BooksIcon size={20} />
               </span>
-              <h1 className="font-serif text-lg font-semibold text-[#1C1C1E]">
+              <h1 className="font-serif text-lg font-semibold text-[#3D3D45]">
                 {title ?? "My Library"}
               </h1>
             </div>
@@ -134,7 +134,7 @@ export default function AppShell({
             {rightSlot}
             <button
               onClick={handleLogout}
-              className="text-[#AEAEB2] hover:text-[#636366] transition-colors text-xs"
+              className="text-[#C2C2C7] hover:text-[#8D8D93] transition-colors text-xs"
             >
               Sign out
             </button>
@@ -158,7 +158,7 @@ export default function AppShell({
           <Link
             href={navItems[0].href}
             className={`flex flex-col items-center gap-0.5 px-3 transition-colors ${
-              navItems[0].active ? "text-[#C5872B]" : "text-[#AEAEB2]"
+              navItems[0].active ? "text-[#E8A830]" : "text-[#C2C2C7]"
             }`}
           >
             <BooksIcon size={22} />
@@ -172,17 +172,17 @@ export default function AppShell({
           >
             <div
               className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl font-semibold shadow-lg ${
-                pathname.startsWith("/add") ? "bg-[#E5A84F]" : "bg-[#C5872B]"
+                pathname.startsWith("/add") ? "bg-[#F5C068]" : "bg-[#E8A830]"
               } text-white`}
-              style={{ boxShadow: "0 4px 16px rgba(197,135,43,0.35)" }}
+              style={{ boxShadow: "0 4px 16px rgba(232,168,48,0.28)" }}
             >
               +
             </div>
             <span
               className={`text-[10px] font-medium ${
                 pathname.startsWith("/add")
-                  ? "text-[#C5872B]"
-                  : "text-[#AEAEB2]"
+                  ? "text-[#E8A830]"
+                  : "text-[#C2C2C7]"
               }`}
             >
               Add
@@ -193,7 +193,7 @@ export default function AppShell({
           <Link
             href={navItems[1].href}
             className={`flex flex-col items-center gap-0.5 px-3 transition-colors ${
-              navItems[1].active ? "text-[#C5872B]" : "text-[#AEAEB2]"
+              navItems[1].active ? "text-[#E8A830]" : "text-[#C2C2C7]"
             }`}
           >
             <GlobeIcon size={22} />

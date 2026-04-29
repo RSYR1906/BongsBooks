@@ -1,27 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  /* Clean neutral palette — minimal modern + iOS native */
+  /* Light neutral palette — minimal modern + iOS native */
   --bg: #FFFFFF;
-  --bg-secondary: #F2F2F7;  /* iOS system grouped background */
-  --label: #1C1C1E;          /* primary text */
-  --label-secondary: #636366; /* secondary text */
-  --label-tertiary: #AEAEB2;  /* placeholder / disabled */
-  --separator: rgba(60, 60, 67, 0.12);
-  --accent: #C5872B;          /* gold brand accent */
-  --accent-light: #E5A84F;    /* gold hover */
-  --accent-bg: #FEF3E2;       /* tinted gold fill */
+  --bg-secondary: #F5F5FA;  /* iOS system grouped background */
+  --label: #3D3D45;          /* primary text */
+  --label-secondary: #8D8D93; /* secondary text */
+  --label-tertiary: #C2C2C7;  /* placeholder / disabled */
+  --separator: rgba(60, 60, 67, 0.09);
+  --accent: #E8A830;          /* gold brand accent */
+  --accent-light: #F5C068;    /* gold hover */
+  --accent-bg: #FFF8EC;       /* tinted gold fill */
   /* Component aliases — referenced across codebase */
-  --parchment: #F2F2F7;
-  --parchment-dark: #E5E5EA;
-  --walnut: #1C1C1E;
-  --walnut-mid: #636366;
-  --gold: #C5872B;
-  --gold-light: #E5A84F;
+  --parchment: #F5F5FA;
+  --parchment-dark: #EBEBF0;
+  --walnut: #3D3D45;
+  --walnut-mid: #8D8D93;
+  --gold: #E8A830;
+  --gold-light: #F5C068;
   --card-bg: #FFFFFF;
-  --aged-paper: #F2F2F7;
-  --background: #F2F2F7;
-  --foreground: #1C1C1E;
+  --aged-paper: #F5F5FA;
+  --background: #F5F5FA;
+  --foreground: #3D3D45;
 }
 
 @theme inline {
@@ -47,7 +47,7 @@
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #E5E5EA 25%, #F2F2F7 50%, #E5E5EA 75%);
+  background: linear-gradient(90deg, #EBEBF0 25%, #F5F5FA 50%, #EBEBF0 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }
@@ -62,7 +62,7 @@
 
 /* Frosted glass — nav bars */
 .glass-panel {
-  background: rgba(242, 242, 247, 0.82);
+  background: rgba(245, 245, 250, 0.85);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
 }

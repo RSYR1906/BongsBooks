@@ -33,34 +33,46 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4 bg-[#F2F2F7]">
+    <main className="min-h-screen flex items-center justify-center px-4 bg-[#F5F5FA]">
       <div className="w-full max-w-sm">
         {/* Branding */}
         <div className="text-center mb-8 select-none">
           <div
             className="w-20 h-20 rounded-[22px] flex items-center justify-center text-4xl mx-auto mb-4"
             style={{
-              background: "linear-gradient(145deg, #E5A84F 0%, #C5872B 60%, #A0691A 100%)",
-              boxShadow: "0 8px 24px rgba(197,135,43,0.30)",
+              background:
+                "linear-gradient(145deg, #F5C068 0%, #E8A830 60%, #C5872B 100%)",
+              boxShadow: "0 8px 24px rgba(232,168,48,0.22)",
             }}
           >
             📚
           </div>
-          <h1 className="font-serif text-3xl font-bold text-[#1C1C1E] tracking-tight">
+          <h1 className="font-serif text-3xl font-bold text-[#3D3D45] tracking-tight">
             Bongs Library
           </h1>
-          <p className="text-[#636366] text-sm mt-1.5">Your personal reading world</p>
+          <p className="text-[#8D8D93] text-sm mt-1.5">
+            Your personal reading world
+          </p>
         </div>
 
         <div
           className="rounded-2xl overflow-hidden"
-          style={{ boxShadow: "0 2px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)" }}
+          style={{
+            boxShadow:
+              "0 2px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04)",
+          }}
         >
-          <form onSubmit={handleSubmit} className="bg-white px-5 py-5 space-y-3">
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white px-5 py-5 space-y-3"
+          >
             {/* Password field — iOS grouped style */}
-            <div className="bg-[#F2F2F7] rounded-xl overflow-hidden">
+            <div className="bg-[#F5F5FA] rounded-xl overflow-hidden">
               <div className="flex items-center px-4">
-                <label htmlFor="password" className="text-sm text-[#636366] shrink-0 w-24">
+                <label
+                  htmlFor="password"
+                  className="text-sm text-[#8D8D93] shrink-0 w-24"
+                >
                   Password
                 </label>
                 <input
@@ -70,7 +82,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   autoFocus
-                  className="flex-1 bg-transparent py-3 text-sm text-[#1C1C1E] focus:outline-none placeholder:text-[#AEAEB2]"
+                  className="flex-1 bg-transparent py-3 text-sm text-[#3D3D45] focus:outline-none placeholder:text-[#C2C2C7]"
                   placeholder="Required"
                 />
               </div>
@@ -83,8 +95,8 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#C5872B] hover:bg-[#E5A84F] disabled:opacity-50 text-white font-semibold rounded-xl px-4 py-3 text-sm transition-colors active:scale-[0.98]"
-              style={{ boxShadow: "0 2px 8px rgba(197,135,43,0.30)" }}
+              className="w-full bg-[#E8A830] hover:bg-[#F5C068] disabled:opacity-50 text-white font-semibold rounded-xl px-4 py-3 text-sm transition-colors active:scale-[0.98]"
+              style={{ boxShadow: "0 2px 8px rgba(232,168,48,0.22)" }}
             >
               {loading ? "Checking…" : "Enter Library"}
             </button>

@@ -40,7 +40,7 @@ export default function DiscoverBookCard({
             style={{
               background:
                 "linear-gradient(160deg, #7B3500 0%, #4A2000 40%, #2B1200 100%)",
-              borderLeft: "3px solid rgba(197,135,43,0.45)",
+              borderLeft: "3px solid rgba(232,168,48,0.35)",
             }}
           >
             <span className="text-2xl">📕</span>
@@ -55,18 +55,18 @@ export default function DiscoverBookCard({
           </div>
         )}
         {read_url && (
-          <div className="absolute top-1.5 left-1.5 bg-[#636366] text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-md uppercase tracking-wide shadow">
+          <div className="absolute top-1.5 left-1.5 bg-[#8D8D93] text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-md uppercase tracking-wide shadow">
             Free
           </div>
         )}
       </div>
 
       {/* Title + author */}
-      <p className="mt-1.5 text-xs font-semibold text-[#1C1C1E] line-clamp-2 leading-tight font-serif">
+      <p className="mt-1.5 text-xs font-semibold text-[#3D3D45] line-clamp-2 leading-tight font-serif">
         {title}
       </p>
       {author && (
-        <p className="text-[11px] text-[#636366] line-clamp-1">{author}</p>
+        <p className="text-[11px] text-[#8D8D93] line-clamp-1">{author}</p>
       )}
 
       {/* Action buttons */}
@@ -76,7 +76,7 @@ export default function DiscoverBookCard({
             href={read_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 text-center text-[10px] font-medium bg-[#F2F2F7] text-[#636366] border border-[#E5E5EA] rounded-lg py-1.5 leading-none hover:bg-[#E5E5EA] transition-colors"
+            className="flex-1 text-center text-[10px] font-medium bg-[#F5F5FA] text-[#8D8D93] border border-[#EBEBF0] rounded-lg py-1.5 leading-none hover:bg-[#EBEBF0] transition-colors"
           >
             Read →
           </a>

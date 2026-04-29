@@ -116,22 +116,27 @@ export default function SearchTab() {
 
   if (savedId) {
     return (
-      <div className="bg-white rounded-2xl p-6 text-center space-y-4" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+      <div
+        className="bg-white rounded-2xl p-6 text-center space-y-4"
+        style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}
+      >
         <div className="text-4xl">✅</div>
-        <p className="font-semibold text-[#1C1C1E]">Book added to your library!</p>
+        <p className="font-semibold text-[#3D3D45]">
+          Book added to your library!
+        </p>
         <div className="flex gap-3 justify-center">
           <button
             onClick={() => {
               setSavedId(null);
               setQuery("");
             }}
-            className="bg-[#C5872B] text-white text-sm font-medium px-4 py-2.5 rounded-xl active:scale-95 transition-transform"
+            className="bg-[#E8A830] text-white text-sm font-medium px-4 py-2.5 rounded-xl active:scale-95 transition-transform"
           >
             Add Another
           </button>
           <button
             onClick={() => router.push(`/book/${savedId}`)}
-            className="border border-[#E5E5EA] text-[#636366] text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-[#F2F2F7] transition-colors"
+            className="border border-[#EBEBF0] text-[#8D8D93] text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-[#F5F5FA] transition-colors"
           >
             View Book
           </button>
@@ -147,13 +152,17 @@ export default function SearchTab() {
         placeholder="Search by title, author, or ISBN…"
         value={query}
         onChange={handleQueryChange}
-        className="w-full bg-white rounded-xl px-4 py-2.5 text-sm text-[#1C1C1E] focus:outline-none placeholder:text-[#AEAEB2]"
-        style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)" }}
+        className="w-full bg-white rounded-xl px-4 py-2.5 text-sm text-[#3D3D45] focus:outline-none placeholder:text-[#C2C2C7]"
+        style={{
+          boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+        }}
         autoFocus
       />
 
       {searching && (
-        <p className="text-sm text-[#636366] text-center animate-pulse">Searching…</p>
+        <p className="text-sm text-[#8D8D93] text-center animate-pulse">
+          Searching…
+        </p>
       )}
 
       {searchError && !searching && (
@@ -163,13 +172,17 @@ export default function SearchTab() {
       )}
 
       {!searching && !searchError && query.trim() && results.length === 0 && (
-        <p className="text-sm text-[#636366] text-center py-4">
-          No books found for &ldquo;{query}&rdquo;. Try a different title or author.
+        <p className="text-sm text-[#8D8D93] text-center py-4">
+          No books found for &ldquo;{query}&rdquo;. Try a different title or
+          author.
         </p>
       )}
 
       {results.length > 0 && !selected && (
-        <div className="bg-white rounded-xl overflow-hidden" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+        <div
+          className="bg-white rounded-xl overflow-hidden"
+          style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}
+        >
           {results.map((vol) => {
             const info = vol.volumeInfo;
             const thumb = info.imageLinks?.smallThumbnail?.replace(
@@ -180,7 +193,7 @@ export default function SearchTab() {
               <button
                 key={vol.id}
                 onClick={() => handleSelect(vol)}
-                className="w-full flex items-center gap-3 px-4 py-3 border-b border-black/[0.05] last:border-0 hover:bg-[#F2F2F7] transition-colors text-left"
+                className="w-full flex items-center gap-3 px-4 py-3 border-b border-black/[0.05] last:border-0 hover:bg-[#F5F5FA] transition-colors text-left"
               >
                 {thumb ? (
                   <Image
@@ -192,21 +205,23 @@ export default function SearchTab() {
                     unoptimized
                   />
                 ) : (
-                  <div className="w-9 h-14 bg-[#E5E5EA] rounded flex items-center justify-center shrink-0 text-xl">
+                  <div className="w-9 h-14 bg-[#EBEBF0] rounded flex items-center justify-center shrink-0 text-xl">
                     📕
                   </div>
                 )}
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-[#1C1C1E] line-clamp-2 font-serif">
+                  <p className="text-sm font-medium text-[#3D3D45] line-clamp-2 font-serif">
                     {info.title}
                   </p>
                   {info.authors && (
-                    <p className="text-xs text-[#636366]">
+                    <p className="text-xs text-[#8D8D93]">
                       {info.authors.join(", ")}
                     </p>
                   )}
                   {info.publishedDate && (
-                    <p className="text-xs text-[#AEAEB2]">{info.publishedDate}</p>
+                    <p className="text-xs text-[#C2C2C7]">
+                      {info.publishedDate}
+                    </p>
                   )}
                 </div>
               </button>
@@ -216,7 +231,10 @@ export default function SearchTab() {
       )}
 
       {selected && (
-        <div className="bg-white rounded-2xl p-5 space-y-4" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
+        <div
+          className="bg-white rounded-2xl p-5 space-y-4"
+          style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}
+        >
           <div className="flex gap-4">
             {selected.cover_url && (
               <Image
@@ -256,14 +274,14 @@ export default function SearchTab() {
           <div className="flex gap-3">
             <button
               onClick={() => setSelected(null)}
-              className="flex-1 border border-[#E5E5EA] text-[#636366] text-sm font-medium py-2.5 rounded-xl hover:bg-[#F2F2F7] transition-colors"
+              className="flex-1 border border-[#EBEBF0] text-[#8D8D93] text-sm font-medium py-2.5 rounded-xl hover:bg-[#F5F5FA] transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
               disabled={saving || !selected.title.trim()}
-              className="flex-1 bg-[#C5872B] hover:bg-[#E5A84F] disabled:opacity-50 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors active:scale-[0.98]"
+              className="flex-1 bg-[#E8A830] hover:bg-[#F5C068] disabled:opacity-50 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors active:scale-[0.98]"
             >
               {saving ? "Saving…" : "Save to Library"}
             </button>
@@ -272,8 +290,13 @@ export default function SearchTab() {
       )}
 
       {!selected && !searching && query && results.length === 0 && (
-        <div className="bg-white rounded-2xl p-5 space-y-3" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}>
-          <p className="text-sm text-[#636366]">No results. Enter details manually:</p>
+        <div
+          className="bg-white rounded-2xl p-5 space-y-3"
+          style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}
+        >
+          <p className="text-sm text-[#8D8D93]">
+            No results. Enter details manually:
+          </p>
           <ManualForm query={query} onSaved={(id) => setSavedId(id)} />
         </div>
       )}
@@ -292,14 +315,14 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-[#636366] mb-0.5">
+      <label className="block text-xs font-medium text-[#8D8D93] mb-0.5">
         {label}
       </label>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full bg-[#F2F2F7] rounded-lg px-2.5 py-1.5 text-sm text-[#1C1C1E] focus:outline-none placeholder:text-[#AEAEB2]"
+        className="w-full bg-[#F5F5FA] rounded-lg px-2.5 py-1.5 text-sm text-[#3D3D45] focus:outline-none placeholder:text-[#C2C2C7]"
       />
     </div>
   );
@@ -339,27 +362,31 @@ function ManualForm({
   return (
     <div className="space-y-3">
       <div>
-        <label className="block text-xs font-medium text-[#636366] mb-0.5">Title *</label>
+        <label className="block text-xs font-medium text-[#8D8D93] mb-0.5">
+          Title *
+        </label>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full bg-[#F2F2F7] rounded-lg px-2.5 py-1.5 text-sm text-[#1C1C1E] focus:outline-none"
+          className="w-full bg-[#F5F5FA] rounded-lg px-2.5 py-1.5 text-sm text-[#3D3D45] focus:outline-none"
         />
       </div>
       <div>
-        <label className="block text-xs font-medium text-[#636366] mb-0.5">Author</label>
+        <label className="block text-xs font-medium text-[#8D8D93] mb-0.5">
+          Author
+        </label>
         <input
           type="text"
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
-          className="w-full bg-[#F2F2F7] rounded-lg px-2.5 py-1.5 text-sm text-[#1C1C1E] focus:outline-none"
+          className="w-full bg-[#F5F5FA] rounded-lg px-2.5 py-1.5 text-sm text-[#3D3D45] focus:outline-none"
         />
       </div>
       <button
         onClick={handleSave}
         disabled={saving || !title.trim()}
-        className="w-full bg-[#C5872B] hover:bg-[#E5A84F] disabled:opacity-50 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors active:scale-[0.98]"
+        className="w-full bg-[#E8A830] hover:bg-[#F5C068] disabled:opacity-50 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors active:scale-[0.98]"
       >
         {saving ? "Saving…" : "Save to Library"}
       </button>

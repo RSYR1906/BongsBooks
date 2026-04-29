@@ -99,7 +99,7 @@ export default function FreeBooksTab() {
     <div className="space-y-4">
       {/* Search bar */}
       <div className="relative">
-        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#AEAEB2] pointer-events-none text-sm select-none">
+        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#C2C2C7] pointer-events-none text-sm select-none">
           🔍
         </span>
         <input
@@ -107,8 +107,10 @@ export default function FreeBooksTab() {
           placeholder="Search 70 000+ public domain classics…"
           value={query}
           onChange={handleQueryChange}
-          className="w-full bg-white rounded-xl pl-9 pr-4 py-2.5 text-sm text-[#1C1C1E] focus:outline-none placeholder:text-[#AEAEB2]"
-          style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)" }}
+          className="w-full bg-white rounded-xl pl-9 pr-4 py-2.5 text-sm text-[#3D3D45] focus:outline-none placeholder:text-[#C2C2C7]"
+          style={{
+            boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+          }}
         />
       </div>
 
@@ -119,7 +121,7 @@ export default function FreeBooksTab() {
           ))}
         </div>
       ) : items.length === 0 ? (
-        <p className="text-center text-[#636366] py-12 text-sm">
+        <p className="text-center text-[#8D8D93] py-12 text-sm">
           No results found. Try a different search.
         </p>
       ) : (
@@ -141,7 +143,7 @@ export default function FreeBooksTab() {
             <button
               onClick={() => loadBooks(query, nextPage, true)}
               disabled={loadingMore}
-              className="w-full py-2.5 bg-white border border-[#E5E5EA] rounded-xl text-sm font-medium text-[#636366] hover:text-[#1C1C1E] hover:border-[#AEAEB2] transition-colors disabled:opacity-50 active:scale-[0.99]"
+              className="w-full py-2.5 bg-white border border-[#EBEBF0] rounded-xl text-sm font-medium text-[#8D8D93] hover:text-[#3D3D45] hover:border-[#C2C2C7] transition-colors disabled:opacity-50 active:scale-[0.99]"
             >
               {loadingMore ? "Loading…" : "Load more"}
             </button>

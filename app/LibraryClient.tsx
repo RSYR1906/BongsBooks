@@ -74,10 +74,10 @@ export default function LibraryClient({ books }: Props) {
     return (
       <div className="text-center py-20">
         <div className="text-6xl mb-4">📖</div>
-        <p className="text-lg font-serif font-semibold text-[#1C1C1E]">
+        <p className="text-lg font-serif font-semibold text-[#3D3D45]">
           Your library is empty
         </p>
-        <p className="text-sm text-[#636366] mt-1">
+        <p className="text-sm text-[#8D8D93] mt-1">
           Tap <strong>+</strong> below to add your first book
         </p>
       </div>
@@ -88,7 +88,7 @@ export default function LibraryClient({ books }: Props) {
     <div className="space-y-3">
       {/* Search — iOS inset style */}
       <div className="relative">
-        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#AEAEB2] pointer-events-none text-sm select-none">
+        <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#C2C2C7] pointer-events-none text-sm select-none">
           🔍
         </span>
         <input
@@ -96,13 +96,15 @@ export default function LibraryClient({ books }: Props) {
           placeholder="Search by title or author…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full bg-white rounded-xl pl-9 pr-8 py-2.5 text-sm text-[#1C1C1E] focus:outline-none placeholder:text-[#AEAEB2]"
-          style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)" }}
+          className="w-full bg-white rounded-xl pl-9 pr-8 py-2.5 text-sm text-[#3D3D45] focus:outline-none placeholder:text-[#C2C2C7]"
+          style={{
+            boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+          }}
         />
         {query && (
           <button
             onClick={() => setQuery("")}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#AEAEB2] hover:text-[#636366] text-base"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#C2C2C7] hover:text-[#8D8D93] text-base"
           >
             ✕
           </button>
@@ -110,17 +112,21 @@ export default function LibraryClient({ books }: Props) {
       </div>
 
       {/* Status filter — iOS segmented control */}
-      <div className="bg-[#E5E5EA] rounded-xl p-1 flex">
+      <div className="bg-[#EBEBF0] rounded-xl p-1 flex">
         {STATUS_FILTERS.map((s) => (
           <button
             key={s.value}
             onClick={() => setStatusFilter(s.value)}
             className={`flex-1 py-1.5 text-[11px] font-medium rounded-[9px] transition-all active:scale-[0.97] leading-snug ${
               statusFilter === s.value
-                ? "bg-white text-[#1C1C1E] font-semibold"
-                : "text-[#636366]"
+                ? "bg-white text-[#3D3D45] font-semibold"
+                : "text-[#8D8D93]"
             }`}
-            style={statusFilter === s.value ? { boxShadow: "0 1px 4px rgba(0,0,0,0.12)" } : {}}
+            style={
+              statusFilter === s.value
+                ? { boxShadow: "0 1px 4px rgba(0,0,0,0.12)" }
+                : {}
+            }
           >
             {s.label}
           </button>
@@ -136,8 +142,8 @@ export default function LibraryClient({ books }: Props) {
               onClick={() => setGenreFilter(g)}
               className={`shrink-0 text-xs px-3 py-1.5 rounded-full font-medium transition-all active:scale-95 ${
                 genreFilter === g
-                  ? "bg-[#C5872B] text-white"
-                  : "bg-white text-[#636366] border border-[#E5E5EA] hover:border-[#C5872B]/30"
+                  ? "bg-[#E8A830] text-white"
+                  : "bg-white text-[#8D8D93] border border-[#EBEBF0] hover:border-[#E8A830]/30"
               }`}
             >
               {g}
@@ -148,13 +154,13 @@ export default function LibraryClient({ books }: Props) {
 
       {/* Count + sort */}
       <div className="flex items-center justify-between">
-        <p className="text-xs text-[#636366]">
+        <p className="text-xs text-[#8D8D93]">
           {filtered.length} {filtered.length === 1 ? "book" : "books"}
         </p>
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as Sort)}
-          className="text-xs text-[#636366] bg-transparent focus:outline-none cursor-pointer hover:text-[#1C1C1E] transition-colors"
+          className="text-xs text-[#8D8D93] bg-transparent focus:outline-none cursor-pointer hover:text-[#3D3D45] transition-colors"
         >
           <option value="newest">Newest first</option>
           <option value="oldest">Oldest first</option>
@@ -165,7 +171,7 @@ export default function LibraryClient({ books }: Props) {
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <p className="text-center text-[#636366] py-10 text-sm">
+        <p className="text-center text-[#8D8D93] py-10 text-sm">
           No books match your filters.
         </p>
       ) : (
@@ -186,7 +192,12 @@ function BookCard({ book }: { book: Book }) {
 
   return (
     <Link href={`/book/${book.id}`} className="group block">
-      <div className="aspect-[2/3] relative rounded-xl overflow-hidden group-hover:-translate-y-1.5 transition-all duration-200" style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06)" }}>
+      <div
+        className="aspect-[2/3] relative rounded-xl overflow-hidden group-hover:-translate-y-1.5 transition-all duration-200"
+        style={{
+          boxShadow: "0 2px 8px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06)",
+        }}
+      >
         {book.cover_url ? (
           <Image
             src={book.cover_url}
@@ -202,7 +213,7 @@ function BookCard({ book }: { book: Book }) {
             style={{
               background:
                 "linear-gradient(160deg, #7B3500 0%, #4A2000 40%, #2B1200 100%)",
-              borderLeft: "3px solid rgba(197,135,43,0.45)",
+              borderLeft: "3px solid rgba(232,168,48,0.35)",
             }}
           >
             <span className="text-2xl">📕</span>
@@ -224,18 +235,16 @@ function BookCard({ book }: { book: Book }) {
           </div>
         )}
         {book.read_url && (
-          <div className="absolute top-1.5 right-1.5 bg-[#636366] text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-md shadow z-10 uppercase tracking-wide">
+          <div className="absolute top-1.5 right-1.5 bg-[#8D8D93] text-white text-[9px] font-semibold px-1.5 py-0.5 rounded-md shadow z-10 uppercase tracking-wide">
             Free
           </div>
         )}
       </div>
-      <p className="mt-1.5 text-xs font-semibold text-[#1C1C1E] line-clamp-2 leading-tight font-serif">
+      <p className="mt-1.5 text-xs font-semibold text-[#3D3D45] line-clamp-2 leading-tight font-serif">
         {book.title}
       </p>
       {book.author && (
-        <p className="text-[11px] text-[#636366] line-clamp-1">
-          {book.author}
-        </p>
+        <p className="text-[11px] text-[#8D8D93] line-clamp-1">{book.author}</p>
       )}
     </Link>
   );

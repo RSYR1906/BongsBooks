@@ -38,12 +38,12 @@ export default function StatusButton({
 
   return (
     <div>
-      <p className="text-xs font-medium text-[#AEAEB2] mb-2 uppercase tracking-wide">
+      <p className="text-xs font-medium text-[#C2C2C7] mb-2 uppercase tracking-wide">
         Reading Status
       </p>
       {/* iOS segmented control */}
       <div
-        className="bg-[#E5E5EA] rounded-xl p-1 flex"
+        className="bg-[#EBEBF0] rounded-xl p-1 flex"
         style={{ opacity: saving ? 0.7 : 1 }}
       >
         {STATUSES.map((s) => (
@@ -53,8 +53,8 @@ export default function StatusButton({
             disabled={saving}
             className={`flex-1 py-2 text-xs font-medium rounded-[9px] transition-all active:scale-[0.97] disabled:cursor-wait ${
               status === s.value
-                ? "bg-white text-[#1C1C1E] font-semibold"
-                : "text-[#636366]"
+                ? "bg-white text-[#3D3D45] font-semibold"
+                : "text-[#8D8D93]"
             }`}
             style={
               status === s.value
@@ -69,4 +69,3 @@ export default function StatusButton({
     </div>
   );
 }
-
