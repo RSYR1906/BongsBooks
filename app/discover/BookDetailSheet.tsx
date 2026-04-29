@@ -48,10 +48,15 @@ export default function BookDetailSheet({
     // For Gutenberg / Archive: fetch lazily from Open Library
     setDescription(null);
     setLoadingDesc(true);
-    const params = new URLSearchParams({ title: book.title, author: book.author });
+    const params = new URLSearchParams({
+      title: book.title,
+      author: book.author,
+    });
     fetch(`/api/discover/description?${params}`)
       .then((r) => r.json())
-      .then((d: { description: string | null }) => setDescription(d.description))
+      .then((d: { description: string | null }) =>
+        setDescription(d.description),
+      )
       .catch(() => setDescription(null))
       .finally(() => setLoadingDesc(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -70,7 +75,10 @@ export default function BookDetailSheet({
       {/* Backdrop */}
       <div
         className="fixed inset-0 z-30 bg-black/40"
-        style={{ backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }}
+        style={{
+          backdropFilter: "blur(4px)",
+          WebkitBackdropFilter: "blur(4px)",
+        }}
         onClick={onClose}
       />
 
@@ -151,8 +159,8 @@ export default function BookDetailSheet({
 
           {/* Action buttons */}
           <div className="space-y-2.5">
-            {book.read_url && (
-              inApp ? (
+            {book.read_url &&
+              (inApp ? (
                 <a
                   href={readHref}
                   className="flex items-center justify-center gap-2 w-full bg-[#E8A830] hover:bg-[#F5C068] text-white font-semibold py-3 rounded-2xl transition-all"
@@ -170,8 +178,7 @@ export default function BookDetailSheet({
                 >
                   📖 Read Online — Free
                 </a>
-              )
-            )}
+              ))}
             <button
               onClick={onAdd}
               disabled={book.addState === "saving" || book.addState === "saved"}

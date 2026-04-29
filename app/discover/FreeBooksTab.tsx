@@ -3,7 +3,10 @@
 import SkeletonCard from "@/app/components/SkeletonCard";
 import { useCallback, useEffect, useRef, useState } from "react";
 import BookDetailSheet from "./BookDetailSheet";
-import DiscoverBookCard, { type AddState, type FreeBook } from "./DiscoverBookCard";
+import DiscoverBookCard, {
+  type AddState,
+  type FreeBook,
+} from "./DiscoverBookCard";
 
 type Source = "gutenberg" | "standard";
 
@@ -57,7 +60,10 @@ export default function FreeBooksTab() {
     const val = e.target.value;
     setQuery(val);
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => loadBooks(val, 1, false, source), 500);
+    debounceRef.current = setTimeout(
+      () => loadBooks(val, 1, false, source),
+      500,
+    );
   }
 
   async function handleAdd(index: number) {
@@ -105,7 +111,10 @@ export default function FreeBooksTab() {
   return (
     <div className="space-y-4">
       {/* Source switcher */}
-      <div className="flex bg-white rounded-xl p-1 gap-1" style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
+      <div
+        className="flex bg-white rounded-xl p-1 gap-1"
+        style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+      >
         {SOURCES.map((s) => (
           <button
             key={s.id}
@@ -134,7 +143,8 @@ export default function FreeBooksTab() {
             onChange={handleQueryChange}
             className="w-full bg-white rounded-xl pl-9 pr-4 py-2.5 text-sm text-[#3D3D45] focus:outline-none placeholder:text-[#C2C2C7]"
             style={{
-              boxShadow: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+              boxShadow:
+                "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
             }}
           />
         </div>
