@@ -36,15 +36,17 @@ export default function AddBookPage() {
           ))}
         </div>
 
-        {activeTab === "Search" && <SearchTab />}
-        {activeTab === "Scan" && (
-          <ScanTab
-            onScanSuccess={(isbn) => {
-              setActiveTab("Search");
-              sessionStorage.setItem("scan_isbn", isbn);
-            }}
-          />
-        )}
+        <div key={activeTab} className="tab-enter">
+          {activeTab === "Search" && <SearchTab />}
+          {activeTab === "Scan" && (
+            <ScanTab
+              onScanSuccess={(isbn) => {
+                setActiveTab("Search");
+                sessionStorage.setItem("scan_isbn", isbn);
+              }}
+            />
+          )}
+        </div>
       </div>
     </AppShell>
   );

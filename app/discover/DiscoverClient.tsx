@@ -39,16 +39,18 @@ export default function DiscoverClient() {
         ))}
       </div>
 
-      {activeTab === "for-you" && (
-        <ErrorBoundary>
-          <RecommendationsTab />
-        </ErrorBoundary>
-      )}
-      {activeTab === "free" && (
-        <ErrorBoundary>
-          <FreeBooksTab />
-        </ErrorBoundary>
-      )}
+      <div key={activeTab} className="tab-enter">
+        {activeTab === "for-you" && (
+          <ErrorBoundary>
+            <RecommendationsTab />
+          </ErrorBoundary>
+        )}
+        {activeTab === "free" && (
+          <ErrorBoundary>
+            <FreeBooksTab />
+          </ErrorBoundary>
+        )}
+      </div>
     </div>
   );
 }

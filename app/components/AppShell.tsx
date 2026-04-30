@@ -143,7 +143,9 @@ export default function AppShell({
       </header>
 
       {/* Page content — padded for bottom nav */}
-      <div className="pb-24">{children}</div>
+      <div key={pathname} className="pb-24 page-enter">
+        {children}
+      </div>
 
       {/* Bottom navigation */}
       <nav
