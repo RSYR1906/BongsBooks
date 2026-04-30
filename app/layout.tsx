@@ -26,6 +26,10 @@ export const metadata: Metadata = {
   title: "Bongs Library",
   description: "A personal digital book library",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
