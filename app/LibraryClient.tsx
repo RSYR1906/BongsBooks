@@ -3,7 +3,7 @@
 import type { Book } from "@/lib/database.types";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type StatusFilter = "all" | "want_to_read" | "reading" | "read";
 type Sort = "newest" | "oldest" | "title" | "author";
@@ -24,6 +24,8 @@ const STATUS_BADGE: Record<
   want_to_read: { label: "🔖", cls: "bg-amber-400" },
 };
 
+const PAGE_SIZE = 24;
+
 interface Props {
   books: Book[];
 }
@@ -31,14 +33,34 @@ interface Props {
 export default function LibraryClient({ books }: Props) {
   const [query, setQuery] = useState("");
   const [genreFilter, setGenreFilter] = useState("All");
+  const [collectionFilter, setCollectionFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [sort, setSort] = useState<Sort>("newest");
+  const [page, setPage] = useState(1);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const allGenres = useMemo(() => {
     const set = new Set<string>();
     books.forEach((b) => b.genre?.forEach((g) => set.add(g)));
     return ["All", ...Array.from(set).sort()];
   }, [books]);
+
+  const allCollections = useMemo(() => {
+    const set = new Set<string>();
+    books.forEach((b) => b.collections?.forEach((c) => set.add(c)));
+    return set.size > 0 ? ["All", ...Array.from(set).sort()] : [];
+  }, [books]);
+
+  // Stats computed from the full unfiltered list
+  const stats = useMemo(
+    () => ({
+      total: books.length,
+      reading: books.filter((b) => b.status === "reading").length,
+      read: books.filter((b) => b.status === "read").length,
+      want: books.filter((b) => b.status === "want_to_read").length,
+    }),
+    [books],
+  );
 
   const filtered = useMemo(() => {
     const q = query.toLowerCase();
@@ -49,8 +71,11 @@ export default function LibraryClient({ books }: Props) {
         (b.author ?? "").toLowerCase().includes(q);
       const matchesGenre =
         genreFilter === "All" || (b.genre ?? []).includes(genreFilter);
+      const matchesCollection =
+        collectionFilter === "All" ||
+        (b.collections ?? []).includes(collectionFilter);
       const matchesStatus = statusFilter === "all" || b.status === statusFilter;
-      return matchesQuery && matchesGenre && matchesStatus;
+      return matchesQuery && matchesGenre && matchesCollection && matchesStatus;
     });
     switch (sort) {
       case "oldest":
@@ -68,7 +93,29 @@ export default function LibraryClient({ books }: Props) {
         break;
     }
     return result;
-  }, [books, query, genreFilter, statusFilter, sort]);
+  }, [books, query, genreFilter, collectionFilter, statusFilter, sort]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [query, genreFilter, collectionFilter, statusFilter, sort]);
+
+  const visibleBooks = filtered.slice(0, page * PAGE_SIZE);
+  const hasMore = visibleBooks.length < filtered.length;
+
+  // Infinite scroll — load more when sentinel enters viewport
+  useEffect(() => {
+    if (!hasMore) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) setPage((p) => p + 1);
+      },
+      { rootMargin: "200px" },
+    );
+    const el = sentinelRef.current;
+    if (el) observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, visibleBooks.length]);
 
   if (books.length === 0) {
     return (
@@ -86,6 +133,27 @@ export default function LibraryClient({ books }: Props) {
 
   return (
     <div className="space-y-3">
+      {/* Stats bar */}
+      <div className="grid grid-cols-4 gap-2">
+        {[
+          { label: "Total", value: stats.total },
+          { label: "Reading", value: stats.reading },
+          { label: "Read", value: stats.read },
+          { label: "Want", value: stats.want },
+        ].map((s) => (
+          <div
+            key={s.label}
+            className="bg-white rounded-xl py-2.5 px-1 text-center"
+            style={{ boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+          >
+            <p className="text-lg font-bold text-[#3D3D45] leading-none">
+              {s.value}
+            </p>
+            <p className="text-[10px] text-[#8D8D93] mt-0.5">{s.label}</p>
+          </div>
+        ))}
+      </div>
+
       {/* Search — iOS inset style */}
       <div className="relative">
         <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#C2C2C7] pointer-events-none text-sm select-none">
@@ -135,20 +203,46 @@ export default function LibraryClient({ books }: Props) {
 
       {/* Genre chips */}
       {allGenres.length > 1 && (
-        <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-hide">
-          {allGenres.map((g) => (
-            <button
-              key={g}
-              onClick={() => setGenreFilter(g)}
-              className={`shrink-0 text-xs px-3 py-1.5 rounded-full font-medium transition-all active:scale-95 ${
-                genreFilter === g
-                  ? "bg-[#E8A830] text-white"
-                  : "bg-white text-[#8D8D93] border border-[#EBEBF0] hover:border-[#E8A830]/30"
-              }`}
-            >
-              {g}
-            </button>
-          ))}
+        <div className="relative">
+          <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-hide">
+            {allGenres.map((g) => (
+              <button
+                key={g}
+                onClick={() => setGenreFilter(g)}
+                className={`shrink-0 text-xs px-3 py-1.5 rounded-full font-medium transition-all active:scale-95 ${
+                  genreFilter === g
+                    ? "bg-[#E8A830] text-white"
+                    : "bg-white text-[#8D8D93] border border-[#EBEBF0] hover:border-[#E8A830]/30"
+                }`}
+              >
+                {g}
+              </button>
+            ))}
+          </div>
+          {/* Scroll-right hint gradient */}
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0.5 w-8 bg-gradient-to-l from-[#F5F5FA] to-transparent" />
+        </div>
+      )}
+
+      {/* Collection chips */}
+      {allCollections.length > 0 && (
+        <div className="relative">
+          <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-hide">
+            {allCollections.map((c) => (
+              <button
+                key={c}
+                onClick={() => setCollectionFilter(c)}
+                className={`shrink-0 text-xs px-3 py-1.5 rounded-full font-medium transition-all active:scale-95 ${
+                  collectionFilter === c
+                    ? "bg-[#3D3D45] text-white"
+                    : "bg-white text-[#8D8D93] border border-[#EBEBF0] hover:border-[#3D3D45]/20"
+                }`}
+              >
+                {c === "All" ? "📚 All Lists" : `📁 ${c}`}
+              </button>
+            ))}
+          </div>
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0.5 w-8 bg-gradient-to-l from-[#F5F5FA] to-transparent" />
         </div>
       )}
 
@@ -175,11 +269,15 @@ export default function LibraryClient({ books }: Props) {
           No books match your filters.
         </p>
       ) : (
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
-          {filtered.map((book) => (
-            <BookCard key={book.id} book={book} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
+            {visibleBooks.map((book) => (
+              <BookCard key={book.id} book={book} />
+            ))}
+          </div>
+          {/* Sentinel for infinite scroll */}
+          <div ref={sentinelRef} className="h-1" />
+        </>
       )}
     </div>
   );

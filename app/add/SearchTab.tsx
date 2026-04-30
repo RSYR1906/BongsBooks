@@ -6,6 +6,13 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+interface OwnedBook {
+  id: string;
+  title: string;
+  isbn: string | null;
+  google_books_id: string | null;
+}
+
 export default function SearchTab() {
   const router = useRouter();
   const [query, setQuery] = useState("");
@@ -15,7 +22,18 @@ export default function SearchTab() {
   const [selected, setSelected] = useState<BookFormData | null>(null);
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
+  const [duplicateId, setDuplicateId] = useState<string | null>(null);
+  const [ownedBooks, setOwnedBooks] = useState<OwnedBook[]>([]);
+  const [hideOwned, setHideOwned] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Fetch owned books for duplicate detection
+  useEffect(() => {
+    fetch("/api/books/owned")
+      .then((r) => r.json())
+      .then((d: { books?: OwnedBook[] }) => setOwnedBooks(d.books ?? []))
+      .catch(() => {});
+  }, []);
 
   // Pick up ISBN from barcode scan
   useEffect(() => {
@@ -58,6 +76,22 @@ export default function SearchTab() {
       setSearching(false);
     }
   }, []);
+
+  function isOwned(vol: GoogleBookVolume): string | null {
+    const isbns = (vol.volumeInfo.industryIdentifiers ?? []).map(
+      (i) => i.identifier,
+    );
+    for (const owned of ownedBooks) {
+      if (owned.google_books_id && owned.google_books_id === vol.id)
+        return owned.id;
+      if (owned.isbn && isbns.includes(owned.isbn)) return owned.id;
+    }
+    return null;
+  }
+
+  const displayResults = hideOwned
+    ? results.filter((v) => !isOwned(v))
+    : results;
 
   function handleQueryChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value;
@@ -102,6 +136,10 @@ export default function SearchTab() {
         body: JSON.stringify(selected),
       });
       const data = await res.json();
+      if (res.status === 409 && data.duplicate) {
+        setDuplicateId(data.existingId as string);
+        return;
+      }
       if (res.ok) {
         setSavedId(data.book.id);
         setSelected(null);
@@ -114,6 +152,7 @@ export default function SearchTab() {
     }
   }
 
+  // ── Success state ──────────────────────────────────────────────────────────
   if (savedId) {
     return (
       <div
@@ -139,6 +178,39 @@ export default function SearchTab() {
             className="border border-[#EBEBF0] text-[#8D8D93] text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-[#F5F5FA] transition-colors"
           >
             View Book
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Duplicate state ────────────────────────────────────────────────────────
+  if (duplicateId) {
+    return (
+      <div
+        className="bg-white rounded-2xl p-6 text-center space-y-4"
+        style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.06)" }}
+      >
+        <div className="text-4xl">📚</div>
+        <p className="font-semibold text-[#3D3D45]">Already in your library!</p>
+        <p className="text-sm text-[#8D8D93]">
+          This book is already saved. Would you like to view it?
+        </p>
+        <div className="flex gap-3 justify-center">
+          <button
+            onClick={() => {
+              setDuplicateId(null);
+              setSelected(null);
+            }}
+            className="border border-[#EBEBF0] text-[#8D8D93] text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-[#F5F5FA] transition-colors"
+          >
+            Keep Searching
+          </button>
+          <button
+            onClick={() => router.push(`/book/${duplicateId}`)}
+            className="bg-[#E8A830] text-white text-sm font-medium px-4 py-2.5 rounded-xl active:scale-95 transition-transform"
+          >
+            View Book →
           </button>
         </div>
       </div>
@@ -179,55 +251,84 @@ export default function SearchTab() {
       )}
 
       {results.length > 0 && !selected && (
-        <div
-          className="bg-white rounded-xl overflow-hidden"
-          style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}
-        >
-          {results.map((vol) => {
-            const info = vol.volumeInfo;
-            const thumb = info.imageLinks?.smallThumbnail?.replace(
-              /^http:/,
-              "https:",
-            );
-            return (
-              <button
-                key={vol.id}
-                onClick={() => handleSelect(vol)}
-                className="w-full flex items-center gap-3 px-4 py-3 border-b border-black/[0.05] last:border-0 hover:bg-[#F5F5FA] transition-colors text-left"
-              >
-                {thumb ? (
-                  <Image
-                    src={thumb}
-                    alt={info.title}
-                    width={36}
-                    height={54}
-                    className="rounded shrink-0 object-cover"
-                    unoptimized
-                  />
-                ) : (
-                  <div className="w-9 h-14 bg-[#EBEBF0] rounded flex items-center justify-center shrink-0 text-xl">
-                    📕
+        <>
+          {/* Hide owned toggle */}
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-[#8D8D93]">
+              {displayResults.length} result
+              {displayResults.length !== 1 ? "s" : ""}
+              {hideOwned && results.length - displayResults.length > 0
+                ? ` (${results.length - displayResults.length} owned hidden)`
+                : ""}
+            </p>
+            <button
+              onClick={() => setHideOwned((v) => !v)}
+              className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${
+                hideOwned
+                  ? "bg-[#E8A830] text-white"
+                  : "bg-[#F5F5FA] text-[#8D8D93] border border-[#EBEBF0]"
+              }`}
+            >
+              Hide owned
+            </button>
+          </div>
+
+          <div
+            className="bg-white rounded-xl overflow-hidden"
+            style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}
+          >
+            {displayResults.map((vol) => {
+              const info = vol.volumeInfo;
+              const thumb = info.imageLinks?.smallThumbnail?.replace(
+                /^http:/,
+                "https:",
+              );
+              const ownedId = isOwned(vol);
+              return (
+                <button
+                  key={vol.id}
+                  onClick={() => handleSelect(vol)}
+                  className="w-full flex items-center gap-3 px-4 py-3 border-b border-black/[0.05] last:border-0 hover:bg-[#F5F5FA] transition-colors text-left"
+                >
+                  {thumb ? (
+                    <Image
+                      src={thumb}
+                      alt={info.title}
+                      width={36}
+                      height={54}
+                      className="rounded shrink-0 object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="w-9 h-14 bg-[#EBEBF0] rounded flex items-center justify-center shrink-0 text-xl">
+                      📕
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-[#3D3D45] line-clamp-2 font-serif">
+                      {info.title}
+                    </p>
+                    {info.authors && (
+                      <p className="text-xs text-[#8D8D93]">
+                        {info.authors.join(", ")}
+                      </p>
+                    )}
+                    {info.publishedDate && (
+                      <p className="text-xs text-[#C2C2C7]">
+                        {info.publishedDate}
+                      </p>
+                    )}
                   </div>
-                )}
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-[#3D3D45] line-clamp-2 font-serif">
-                    {info.title}
-                  </p>
-                  {info.authors && (
-                    <p className="text-xs text-[#8D8D93]">
-                      {info.authors.join(", ")}
-                    </p>
+                  {ownedId && (
+                    <span className="shrink-0 text-[10px] font-semibold text-green-600 bg-green-50 border border-green-200 px-1.5 py-0.5 rounded-md">
+                      ✓ Owned
+                    </span>
                   )}
-                  {info.publishedDate && (
-                    <p className="text-xs text-[#C2C2C7]">
-                      {info.publishedDate}
-                    </p>
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </div>
+                </button>
+              );
+            })}
+          </div>
+        </>
       )}
 
       {selected && (
@@ -393,3 +494,4 @@ function ManualForm({
     </div>
   );
 }
+

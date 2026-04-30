@@ -90,14 +90,36 @@ function ReaderContent() {
   const [progress, setProgress] = useState(0);
   const [showControls, setShowControls] = useState(true);
   const lastScrollY = useRef(0);
+  const savedProgressRef = useRef<number | null>(null);
+  const saveThrottleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastSavedProgressRef = useRef<number>(-1);
 
-  // Fetch book content via proxy
+  // Fetch book content via proxy, then restore saved position
   useEffect(() => {
     if (!url) {
       setError("No book URL provided.");
       setLoading(false);
       return;
     }
+
+    // Fetch saved progress if we have a bookId
+    const progressFetch = bookId
+      ? fetch(`/api/books/owned`)
+          .then((r) => r.json())
+          .then(
+            (d: {
+              books?: { id: string; read_progress?: number | null }[];
+            }) => {
+              const owned = d.books ?? [];
+              const match = owned.find((b) => b.id === bookId);
+              if (match?.read_progress && match.read_progress > 0) {
+                savedProgressRef.current = match.read_progress;
+              }
+            },
+          )
+          .catch(() => {})
+      : Promise.resolve();
+
     fetch(`/api/read?url=${encodeURIComponent(url)}`)
       .then((r) => r.json())
       .then((data) => {
@@ -105,15 +127,52 @@ function ReaderContent() {
         setParagraphs(data.paragraphs as string[]);
       })
       .catch((e: Error) => setError(e.message))
-      .finally(() => setLoading(false));
-  }, [url]);
+      .finally(async () => {
+        await progressFetch;
+        setLoading(false);
+      });
+  }, [url, bookId]);
+
+  // Restore scroll position after content renders
+  useEffect(() => {
+    if (loading || paragraphs.length === 0) return;
+    const saved = savedProgressRef.current;
+    if (saved && saved > 1) {
+      // Small timeout to let the DOM finish rendering all paragraphs
+      const t = setTimeout(() => {
+        const total =
+          document.documentElement.scrollHeight - window.innerHeight;
+        window.scrollTo({ top: (saved / 100) * total, behavior: "instant" });
+      }, 120);
+      return () => clearTimeout(t);
+    }
+  }, [loading, paragraphs]);
+
+  // Save progress to Supabase (throttled — only when crossing 5% thresholds)
+  function maybeSaveProgress(pct: number) {
+    if (!bookId) return;
+    const rounded = Math.floor(pct / 5) * 5;
+    if (rounded === lastSavedProgressRef.current) return;
+    lastSavedProgressRef.current = rounded;
+
+    if (saveThrottleRef.current) clearTimeout(saveThrottleRef.current);
+    saveThrottleRef.current = setTimeout(() => {
+      fetch(`/api/books/${bookId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ read_progress: rounded }),
+      }).catch(() => {});
+    }, 1500);
+  }
 
   // Scroll progress + hide controls on scroll down
   useEffect(() => {
     function onScroll() {
       const scrolled = window.scrollY;
       const total = document.documentElement.scrollHeight - window.innerHeight;
-      setProgress(total > 0 ? (scrolled / total) * 100 : 0);
+      const pct = total > 0 ? (scrolled / total) * 100 : 0;
+      setProgress(pct);
+      maybeSaveProgress(pct);
 
       // Hide controls when scrolling down, show when scrolling up
       setShowControls(scrolled < lastScrollY.current || scrolled < 80);
@@ -121,7 +180,8 @@ function ReaderContent() {
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bookId]);
 
   const t = THEMES[theme];
   const fontSize: FontSize = FONT_SIZES[fontIdx];

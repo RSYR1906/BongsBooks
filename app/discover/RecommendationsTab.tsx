@@ -6,6 +6,13 @@ import { volumeToFormData } from "@/lib/books";
 import { useCallback, useEffect, useRef, useState } from "react";
 import DiscoverBookCard, { type AddState } from "./DiscoverBookCard";
 
+interface OwnedBook {
+  id: string;
+  title: string;
+  isbn: string | null;
+  google_books_id: string | null;
+}
+
 interface RecItem {
   volume: GoogleBookVolume;
   addState: AddState;
@@ -19,10 +26,30 @@ export default function RecommendationsTab() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState(false);
+  const [ownedBooks, setOwnedBooks] = useState<OwnedBook[]>([]);
   const offsetRef = useRef(0);
   const seenIds = useRef(new Set<string>());
   const sentinelRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
+
+  // Fetch owned books once
+  useEffect(() => {
+    fetch("/api/books/owned")
+      .then((r) => r.json())
+      .then((d: { books?: OwnedBook[] }) => setOwnedBooks(d.books ?? []))
+      .catch(() => {});
+  }, []);
+
+  function isVolumeOwned(volume: GoogleBookVolume): boolean {
+    const isbns = (volume.volumeInfo.industryIdentifiers ?? []).map(
+      (i) => i.identifier,
+    );
+    return ownedBooks.some(
+      (o) =>
+        (o.google_books_id && o.google_books_id === volume.id) ||
+        (o.isbn && isbns.includes(o.isbn)),
+    );
+  }
 
   function resolveReadUrls(volumes: GoogleBookVolume[], startIndex: number) {
     volumes.slice(0, 6).forEach((volume, i) => {
@@ -253,6 +280,7 @@ export default function RecommendationsTab() {
                   read_url={item.readUrl}
                   addState={item.addState}
                   onAdd={() => handleAdd(index)}
+                  inLibrary={isVolumeOwned(item.volume)}
                 />
               );
             })}

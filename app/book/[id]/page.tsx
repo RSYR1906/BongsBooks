@@ -5,9 +5,11 @@ import { getSupabase } from "@/lib/supabase";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import CollectionsCard from "./CollectionsCard";
 import DeleteBookButton from "./DeleteBookButton";
 import EditBookForm from "./EditBookForm";
 import ReadingNoteCard from "./ReadingNoteCard";
+import StarRating from "./StarRating";
 import StatusButton from "./StatusButton";
 
 function isInAppReadable(url: string | null | undefined): boolean {
@@ -115,6 +117,11 @@ export default async function BookPage({ params }: Props) {
           <StatusButton id={b.id} status={b.status} />
         </div>
 
+        {/* Star rating */}
+        <div className="mb-4">
+          <StarRating id={b.id} rating={b.rating ?? null} />
+        </div>
+
         {/* CTA */}
         <div className="space-y-2.5 mb-6">
           {isInAppReadable(b.read_url) ? (
@@ -174,6 +181,9 @@ export default async function BookPage({ params }: Props) {
 
         {/* Reading note */}
         <ReadingNoteCard id={b.id} note={b.reading_note} />
+
+        {/* Collections */}
+        <CollectionsCard id={b.id} collections={b.collections ?? null} />
 
         {/* Edit + Danger zone */}
         <div className="mb-10 space-y-3">

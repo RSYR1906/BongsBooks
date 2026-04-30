@@ -36,6 +36,7 @@ export default function ScanTab({ onScanSuccess }: Props) {
     if (!code) return;
     Quagga.offDetected(onDetected);
     Quagga.stop();
+    navigator.vibrate?.(60);
     onScanSuccess(code);
   }
 

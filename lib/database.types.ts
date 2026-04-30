@@ -26,6 +26,9 @@ export interface Database {
           added_at: string;
           status: "want_to_read" | "reading" | "read" | null;
           reading_note: string | null;
+          rating: number | null;
+          read_progress: number | null;
+          collections: string[] | null;
         };
         Insert: {
           id?: string;
@@ -43,6 +46,9 @@ export interface Database {
           added_at?: string;
           status?: "want_to_read" | "reading" | "read" | null;
           reading_note?: string | null;
+          rating?: number | null;
+          read_progress?: number | null;
+          collections?: string[] | null;
         };
         Update: Partial<Database["public"]["Tables"]["books"]["Insert"]>;
         Relationships: [];

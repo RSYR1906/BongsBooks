@@ -15,6 +15,9 @@ const ALLOWED_FIELDS = [
   "read_url",
   "status",
   "reading_note",
+  "rating",
+  "read_progress",
+  "collections",
 ] as const;
 
 export async function PATCH(

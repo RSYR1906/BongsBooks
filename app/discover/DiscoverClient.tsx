@@ -1,5 +1,6 @@
 "use client";
 
+import ErrorBoundary from "@/app/components/ErrorBoundary";
 import { useState } from "react";
 import FreeBooksTab from "./FreeBooksTab";
 import RecommendationsTab from "./RecommendationsTab";
@@ -38,8 +39,16 @@ export default function DiscoverClient() {
         ))}
       </div>
 
-      {activeTab === "for-you" && <RecommendationsTab />}
-      {activeTab === "free" && <FreeBooksTab />}
+      {activeTab === "for-you" && (
+        <ErrorBoundary>
+          <RecommendationsTab />
+        </ErrorBoundary>
+      )}
+      {activeTab === "free" && (
+        <ErrorBoundary>
+          <FreeBooksTab />
+        </ErrorBoundary>
+      )}
     </div>
   );
 }

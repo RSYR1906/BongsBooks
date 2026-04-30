@@ -23,6 +23,7 @@ interface Props {
   addState: AddState;
   onAdd: () => void;
   onInfo?: () => void;
+  inLibrary?: boolean;
 }
 
 export default function DiscoverBookCard({
@@ -33,6 +34,7 @@ export default function DiscoverBookCard({
   addState,
   onAdd,
   onInfo,
+  inLibrary = false,
 }: Props) {
   return (
     <div className="flex flex-col">
@@ -53,23 +55,13 @@ export default function DiscoverBookCard({
               unoptimized
             />
           ) : (
-            <div
-              className="absolute inset-0 flex flex-col items-center justify-center p-2 text-center overflow-hidden"
-              style={{
-                background:
-                  "linear-gradient(160deg, #7B3500 0%, #4A2000 40%, #2B1200 100%)",
-                borderLeft: "3px solid rgba(232,168,48,0.35)",
-              }}
-            >
-              <span className="text-2xl">📕</span>
-              <span className="text-[10px] text-amber-200/90 mt-1 line-clamp-3 font-serif leading-tight">
-                {title}
+            <div className="absolute inset-0 flex items-center justify-center bg-[#E8A830]/20">
+              <span
+                className="text-5xl font-bold text-[#E8A830] select-none"
+                style={{ fontFamily: "Lora, Georgia, serif" }}
+              >
+                {title.charAt(0).toUpperCase()}
               </span>
-              {author && (
-                <span className="text-[9px] text-amber-300/50 mt-0.5 line-clamp-1">
-                  {author}
-                </span>
-              )}
             </div>
           )}
           {read_url && (
@@ -90,29 +82,35 @@ export default function DiscoverBookCard({
         )}
       </button>
 
-      {/* Add button */}
+      {/* Add / in-library button */}
       <div className="mt-2">
-        <button
-          onClick={onAdd}
-          disabled={addState === "saving" || addState === "saved"}
-          className={`w-full text-center text-[10px] font-semibold rounded-lg py-1.5 leading-none transition-all active:scale-95 ${
-            addState === "saved"
-              ? "bg-green-100 text-green-700 border border-green-200"
-              : addState === "error"
-                ? "bg-red-50 text-red-600 border border-red-200"
-                : addState === "saving"
-                  ? "bg-gold/20 text-walnut-mid border border-gold/20"
-                  : "bg-gold text-white shadow-sm hover:bg-gold-light"
-          }`}
-        >
-          {addState === "saved"
-            ? "✓ Added"
-            : addState === "saving"
-              ? "…"
-              : addState === "error"
-                ? "Retry"
-                : "+ Add"}
-        </button>
+        {inLibrary ? (
+          <div className="w-full text-center text-[10px] font-semibold rounded-lg py-1.5 leading-none bg-green-100 text-green-700 border border-green-200">
+            ✓ In Library
+          </div>
+        ) : (
+          <button
+            onClick={onAdd}
+            disabled={addState === "saving" || addState === "saved"}
+            className={`w-full text-center text-[10px] font-semibold rounded-lg py-1.5 leading-none transition-all active:scale-95 ${
+              addState === "saved"
+                ? "bg-green-100 text-green-700 border border-green-200"
+                : addState === "error"
+                  ? "bg-red-50 text-red-600 border border-red-200"
+                  : addState === "saving"
+                    ? "bg-gold/20 text-walnut-mid border border-gold/20"
+                    : "bg-gold text-white shadow-sm hover:bg-gold-light"
+            }`}
+          >
+            {addState === "saved"
+              ? "✓ Added"
+              : addState === "saving"
+                ? "…"
+                : addState === "error"
+                  ? "Retry"
+                  : "+ Add"}
+          </button>
+        )}
       </div>
     </div>
   );

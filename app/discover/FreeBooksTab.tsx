@@ -17,6 +17,13 @@ const SOURCES: { id: Source; label: string }[] = [
 
 type FreeBookItem = FreeBook & { addState: AddState };
 
+interface OwnedBook {
+  id: string;
+  title: string;
+  isbn: string | null;
+  google_books_id: string | null;
+}
+
 export default function FreeBooksTab() {
   const [source, setSource] = useState<Source>("gutenberg");
   const [query, setQuery] = useState("");
@@ -25,7 +32,26 @@ export default function FreeBooksTab() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [nextPage, setNextPage] = useState<number | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [ownedBooks, setOwnedBooks] = useState<OwnedBook[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  // Fetch owned books once
+  useEffect(() => {
+    fetch("/api/books/owned")
+      .then((r) => r.json())
+      .then((d: { books?: OwnedBook[] }) => setOwnedBooks(d.books ?? []))
+      .catch(() => {});
+  }, []);
+
+  function isOwned(item: FreeBook): boolean {
+    const titleLower = item.title.toLowerCase();
+    return ownedBooks.some(
+      (o) =>
+        (item.id && o.google_books_id === item.id) ||
+        o.title.toLowerCase() === titleLower,
+    );
+  }
 
   const loadBooks = useCallback(
     async (q: string, page = 1, append = false, src: Source = "gutenberg") => {
@@ -55,6 +81,21 @@ export default function FreeBooksTab() {
     setSelectedIndex(null);
     loadBooks("", 1, false, source);
   }, [source, loadBooks]);
+
+  // Infinite scroll sentinel
+  useEffect(() => {
+    if (!sentinelRef.current || !nextPage) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && !loadingMore) {
+          loadBooks(query, nextPage, true, source);
+        }
+      },
+      { rootMargin: "200px" },
+    );
+    obs.observe(sentinelRef.current);
+    return () => obs.disconnect();
+  }, [nextPage, loadingMore, query, source, loadBooks]);
 
   function handleQueryChange(e: React.ChangeEvent<HTMLInputElement>) {
     const val = e.target.value;
@@ -177,18 +218,16 @@ export default function FreeBooksTab() {
                 addState={item.addState}
                 onAdd={() => handleAdd(index)}
                 onInfo={() => setSelectedIndex(index)}
+                inLibrary={isOwned(item)}
               />
             ))}
           </div>
-          {nextPage && (
-            <button
-              onClick={() => loadBooks(query, nextPage, true, source)}
-              disabled={loadingMore}
-              className="w-full py-2.5 bg-white border border-[#EBEBF0] rounded-xl text-sm font-medium text-[#8D8D93] hover:text-[#3D3D45] hover:border-[#C2C2C7] transition-colors disabled:opacity-50 active:scale-[0.99]"
-            >
-              {loadingMore ? "Loading…" : "Load more"}
-            </button>
+          {loadingMore && (
+            <p className="text-center text-xs text-[#8D8D93] animate-pulse py-2">
+              Loading more…
+            </p>
           )}
+          <div ref={sentinelRef} className="h-1" />
         </>
       )}
 
