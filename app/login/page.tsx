@@ -8,7 +8,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [exiting, setExiting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -21,10 +20,10 @@ export default function LoginPage() {
         body: JSON.stringify({ password }),
       });
       if (res.ok) {
-        setExiting(true);
-        await new Promise((r) => setTimeout(r, 340));
         router.push("/");
         router.refresh();
+        // keep loading=true so spinner stays visible during navigation
+        return;
       } else {
         setError("Incorrect password");
       }
@@ -36,9 +35,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main
-      className={`min-h-screen flex items-center justify-center px-4 bg-[#F5F5FA] ${exiting ? "login-exit" : "page-enter"}`}
-    >
+    <main className="min-h-screen flex items-center justify-center px-4 bg-[#F5F5FA] page-enter">
       <div className="w-full max-w-sm">
         {/* Branding */}
         <div className="text-center mb-8 select-none">
@@ -100,10 +97,33 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#E8A830] hover:bg-[#F5C068] disabled:opacity-50 text-white font-semibold rounded-xl px-4 py-3 text-sm transition-colors active:scale-[0.98]"
+              className="w-full bg-[#E8A830] hover:bg-[#F5C068] disabled:opacity-70 text-white font-semibold rounded-xl px-4 py-3 text-sm transition-colors active:scale-[0.98] flex items-center justify-center gap-2"
               style={{ boxShadow: "0 2px 8px rgba(232,168,48,0.22)" }}
             >
-              {loading ? "Checking…" : "Enter Library"}
+              {loading && (
+                <svg
+                  className="animate-spin h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                  />
+                </svg>
+              )}
+              {loading ? "Entering…" : "Enter Library"}
             </button>
           </form>
         </div>
