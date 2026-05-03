@@ -243,12 +243,16 @@ export default function SearchTab() {
         </div>
       )}
 
-      {!searching && !searchError && query.trim() && results.length === 0 && (
-        <p className="text-sm text-[#8D8D93] text-center py-4">
-          No books found for &ldquo;{query}&rdquo;. Try a different title or
-          author.
-        </p>
-      )}
+      {!searching &&
+        !searchError &&
+        !selected &&
+        query.trim() &&
+        results.length === 0 && (
+          <p className="text-sm text-[#8D8D93] text-center py-4">
+            No books found for &ldquo;{query}&rdquo;. Try a different title or
+            author.
+          </p>
+        )}
 
       {results.length > 0 && !selected && (
         <>
@@ -494,4 +498,3 @@ function ManualForm({
     </div>
   );
 }
-
