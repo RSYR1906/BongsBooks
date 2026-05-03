@@ -18,7 +18,7 @@ export default async function HomePage() {
 
   return (
     <AppShell title="My Library">
-      <div className="max-w-2xl mx-auto px-4 py-4">
+      <div className="page-enter max-w-2xl mx-auto px-4 py-4">
         <ErrorBoundary>
           <LibraryClient books={(books as Book[]) ?? []} />
         </ErrorBoundary>

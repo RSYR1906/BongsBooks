@@ -8,6 +8,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [exiting, setExiting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -20,6 +21,8 @@ export default function LoginPage() {
         body: JSON.stringify({ password }),
       });
       if (res.ok) {
+        setExiting(true);
+        await new Promise((r) => setTimeout(r, 340));
         router.push("/");
         router.refresh();
       } else {
@@ -33,7 +36,9 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4 bg-[#F5F5FA]">
+    <main
+      className={`min-h-screen flex items-center justify-center px-4 bg-[#F5F5FA] ${exiting ? "login-exit" : "page-enter"}`}
+    >
       <div className="w-full max-w-sm">
         {/* Branding */}
         <div className="text-center mb-8 select-none">
