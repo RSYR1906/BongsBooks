@@ -92,24 +92,36 @@ export async function GET(request: NextRequest) {
       fetch(googleUrl, { cache: "no-store", signal: controller.signal }),
       chinese ? searchOpenLibrary(q, controller.signal) : Promise.resolve([]),
     ]);
+
+    // Retry once on transient Google errors (503 Service Unavailable, 429 rate limit)
+    let finalGoogleRes = googleRes;
+    if (!googleRes.ok && (googleRes.status === 503 || googleRes.status === 429)) {
+      console.warn(`[search] Google Books returned ${googleRes.status}, retrying once…`);
+      await new Promise((r) => setTimeout(r, 600));
+      finalGoogleRes = await fetch(googleUrl, {
+        cache: "no-store",
+        signal: controller.signal,
+      }).catch(() => googleRes);
+    }
+
     clearTimeout(timer);
 
-    if (!googleRes.ok) {
-      const body = await googleRes.text().catch(() => "");
+    if (!finalGoogleRes.ok) {
+      const body = await finalGoogleRes.text().catch(() => "");
       console.error(
-        `[search] Google Books returned ${googleRes.status}: ${body.slice(0, 200)}`,
+        `[search] Google Books returned ${finalGoogleRes.status}: ${body.slice(0, 200)}`,
       );
       // If Google fails but we have OL results, return those
       if (olItems.length > 0) {
         return NextResponse.json({ items: olItems });
       }
       return NextResponse.json(
-        { error: `Google Books API error (${googleRes.status})` },
+        { error: `Google Books API error (${finalGoogleRes.status})` },
         { status: 502 },
       );
     }
 
-    const googleData = (await googleRes.json()) as { items?: GoogleBookVolume[] };
+    const googleData = (await finalGoogleRes.json()) as { items?: GoogleBookVolume[] };
     const googleItems: GoogleBookVolume[] = googleData.items ?? [];
 
     if (!chinese || olItems.length === 0) {
@@ -133,7 +145,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ items: [...googleItems, ...olDeduped] });
   } catch (err) {
-    clearTimeout(timer);
+    clearTimeout(timer); // ensure timer is cleared on any early-exit path
     const isTimeout = err instanceof Error && err.name === "AbortError";
     console.error("[search] fetch error:", isTimeout ? "timeout" : err);
     return NextResponse.json(

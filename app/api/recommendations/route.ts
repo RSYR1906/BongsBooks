@@ -1,5 +1,6 @@
 import type { GoogleBookVolume } from "@/lib/books";
 import { getSupabase } from "@/lib/supabase";
+import { GoogleGenAI } from "@google/genai";
 import { NextResponse } from "next/server";
 
 // Vercel free tier: 10s max. Keep well under that.
@@ -47,6 +48,61 @@ export async function GET(request: Request) {
   } catch {
     // Timeout or unexpected error — return generic fallback
     return NextResponse.json({ results: [], basis: null });
+  }
+}
+
+interface GeminiResult {
+  queries: string[];
+  basis: string;
+}
+
+async function getGeminiQueries(
+  topGenres: string[],
+  topAuthors: string[],
+  sampleTitles: string[],
+): Promise<GeminiResult | null> {
+  const geminiKey = process.env.GEMINI_API_KEY;
+  if (!geminiKey) return null;
+
+  try {
+    const ai = new GoogleGenAI({ apiKey: geminiKey });
+    const libraryProfile = [
+      topGenres.length > 0 ? `Favourite genres: ${topGenres.join(", ")}` : null,
+      topAuthors.length > 0
+        ? `Favourite authors: ${topAuthors.join(", ")}`
+        : null,
+      sampleTitles.length > 0
+        ? `Recent books: ${sampleTitles.join(", ")}`
+        : null,
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const prompt = `You are a book recommendation assistant. Based on this reader's library profile, generate 3-4 Google Books API search query strings that will surface great book recommendations they haven't read yet.
+
+Library profile:
+${libraryProfile}
+
+Rules:
+- Each query must be a valid Google Books API query string (e.g. "subject:\"dark academia\"", "inauthor:\"Ursula K. Le Guin\"", "subject:\"hard sci-fi\"")
+- Queries should be specific and diverse — mix genres, sub-genres, and authors
+- Do NOT repeat the exact genres/authors already in the profile; explore adjacent territory
+- Return ONLY valid JSON with this exact shape: { "queries": ["...", "..."], "basis": "short human-readable summary like 'Gothic fiction & dystopian sci-fi'" }`;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: prompt,
+      config: { responseMimeType: "application/json" },
+    });
+
+    const text = response.text ?? "";
+    const parsed = JSON.parse(text) as GeminiResult;
+    if (!Array.isArray(parsed.queries) || parsed.queries.length === 0)
+      return null;
+    return parsed;
+  } catch (err) {
+    console.error("Gemini query generation failed:", err);
+    return null;
   }
 }
 
@@ -102,11 +158,34 @@ async function buildResponse(apiKey: string | undefined, offset: number) {
   const ownedIsbns = new Set(books.map((b) => b.isbn).filter(Boolean));
   const ownedTitles = new Set(books.map((b) => b.title.toLowerCase().trim()));
 
-  // Build query list — genres first, then author
-  const queries: string[] = [];
-  topGenres.forEach((g) => queries.push(`subject:"${g}"`));
-  if (topAuthor) queries.push(`inauthor:"${topAuthor}"`);
-  if (queries.length === 0) queries.push("subject:fiction bestseller");
+  // Build query list — try Gemini first (only on first page to avoid extra API calls)
+  let queries: string[] = [];
+  let geminiBasis: string | null = null;
+
+  if (offset === 0) {
+    const topAuthors = [...authorMap.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 2)
+      .map(([a]) => a);
+    const sampleTitles = books
+      .slice(-5)
+      .map((b) => b.title)
+      .filter(Boolean);
+
+    const gemini = await getGeminiQueries(topGenres, topAuthors, sampleTitles);
+    if (gemini) {
+      queries = gemini.queries;
+      geminiBasis = gemini.basis;
+      console.log("Gemini queries:", queries, "basis:", geminiBasis);
+    }
+  }
+
+  // Fallback to algorithmic queries if Gemini was skipped or failed
+  if (queries.length === 0) {
+    topGenres.forEach((g) => queries.push(`subject:"${g}"`))
+    if (topAuthor) queries.push(`inauthor:"${topAuthor}"`);
+    if (queries.length === 0) queries.push("subject:fiction bestseller");
+  }
 
   const allResults = await Promise.all(
     queries.map((q) => fetchGoogleBooks(q, apiKey, offset)),
@@ -145,7 +224,8 @@ async function buildResponse(apiKey: string | undefined, offset: number) {
   }
 
   const basis =
-    topGenres.length > 0 ? topGenres.join(", ") : (topAuthor ?? null);
+    geminiBasis ??
+    (topGenres.length > 0 ? topGenres.join(", ") : (topAuthor ?? null));
 
   return NextResponse.json({ results: recommendations, basis });
 }
