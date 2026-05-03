@@ -67,11 +67,9 @@ export default function SearchTab() {
       const data = await res.json();
       const items: GoogleBookVolume[] = data.items ?? [];
       setResults(items);
-    } catch (err) {
+    } catch {
       setResults([]);
-      setSearchError(
-        err instanceof Error ? err.message : "Search failed — try again.",
-      );
+      setSearchError("Sorry, no such book found.");
     } finally {
       setSearching(false);
     }
@@ -237,20 +235,15 @@ export default function SearchTab() {
         </p>
       )}
 
-      {searchError && !searching && (
-        <div className="bg-red-50 rounded-xl px-4 py-3 text-sm text-red-500 text-center">
-          {searchError}
-        </div>
-      )}
-
-      {!searching &&
-        !searchError &&
-        !selected &&
-        query.trim() &&
-        results.length === 0 && (
+      {(searchError ||
+        (!searching &&
+          !searchError &&
+          !selected &&
+          query.trim() &&
+          results.length === 0)) &&
+        !searching && (
           <p className="text-sm text-[#8D8D93] text-center py-4">
-            No books found for &ldquo;{query}&rdquo;. Try a different title or
-            author.
+            Sorry, no such book found.
           </p>
         )}
 

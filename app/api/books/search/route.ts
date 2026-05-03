@@ -70,9 +70,11 @@ async function searchOpenLibrary(
 // ─── Route handler ────────────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest) {
-  const q = request.nextUrl.searchParams.get("q");
-  if (!q) {
+  const raw = request.nextUrl.searchParams.get("q");
+  if (!raw?.trim()) {
     return NextResponse.json({ items: [] });
+  }
+  const q = raw.trim().toLowerCase();
   }
 
   const apiKey = process.env.GOOGLE_BOOKS_API_KEY;

@@ -63,12 +63,15 @@ export default function LibraryClient({ books }: Props) {
   );
 
   const filtered = useMemo(() => {
-    const q = query.toLowerCase();
+    const q = query.trim().toLowerCase();
     let result = books.filter((b) => {
       const matchesQuery =
         !q ||
         b.title.toLowerCase().includes(q) ||
-        (b.author ?? "").toLowerCase().includes(q);
+        (b.author ?? "").toLowerCase().includes(q) ||
+        (b.genre ?? []).some((g) => g.toLowerCase().includes(q)) ||
+        (b.description ?? "").toLowerCase().includes(q) ||
+        (b.collections ?? []).some((c) => c.toLowerCase().includes(q));
       const matchesGenre =
         genreFilter === "All" || (b.genre ?? []).includes(genreFilter);
       const matchesCollection =
@@ -220,11 +223,11 @@ export default function LibraryClient({ books }: Props) {
             ))}
           </div>
           {/* Scroll-right hint gradient */}
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0.5 w-8 bg-gradient-to-l from-[#F5F5FA] to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0.5 w-8 bg-linear-to-l from-[#F5F5FA] to-transparent" />
         </div>
       )}
 
-      {/* Collection chips */}
+      {/* Collection chips */}}
       {allCollections.length > 0 && (
         <div className="relative">
           <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-hide">
@@ -242,11 +245,11 @@ export default function LibraryClient({ books }: Props) {
               </button>
             ))}
           </div>
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0.5 w-8 bg-gradient-to-l from-[#F5F5FA] to-transparent" />
+          <div className="pointer-events-none absolute right-0 top-0 bottom-0.5 w-8 bg-linear-to-l from-[#F5F5FA] to-transparent" />
         </div>
       )}
 
-      {/* Count + sort */}
+      {/* Count + sort */}}
       <div className="flex items-center justify-between">
         <p className="text-xs text-[#8D8D93]">
           {filtered.length} {filtered.length === 1 ? "book" : "books"}
@@ -291,7 +294,7 @@ function BookCard({ book }: { book: Book }) {
   return (
     <Link href={`/book/${book.id}`} className="group block">
       <div
-        className="aspect-[2/3] relative rounded-xl overflow-hidden group-hover:-translate-y-1.5 transition-all duration-200"
+        className="aspect-2/3 relative rounded-xl overflow-hidden group-hover:-translate-y-1.5 transition-all duration-200"
         style={{
           boxShadow: "0 2px 8px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.06)",
         }}
