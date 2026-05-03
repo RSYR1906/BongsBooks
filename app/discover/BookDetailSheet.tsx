@@ -3,6 +3,7 @@
 import ExpandableDescription from "@/app/components/ExpandableDescription";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import type { AddState, FreeBook } from "./DiscoverBookCard";
 
 function isGutenbergInApp(url: string | null | undefined): boolean {
@@ -69,7 +70,7 @@ export default function BookDetailSheet({
       ? `/read?url=${encodeURIComponent(book.read_url)}&title=${encodeURIComponent(book.title)}&author=${encodeURIComponent(book.author)}`
       : (book.read_url ?? "");
 
-  return (
+  return createPortal(
     <>
       {/* Backdrop */}
       <div
@@ -243,6 +244,7 @@ export default function BookDetailSheet({
           </div>
         </div>
       </div>
-    </>
+    </>,
+    document.body,
   );
 }
